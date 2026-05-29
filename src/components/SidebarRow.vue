@@ -1,42 +1,83 @@
 <script setup>
-import Folder from "../icons/Folder.vue";
-import SideButton from "./SideButton.vue";
-import KeyIcon from "../icons/Key.vue";
+import { computed, h } from "vue";
+import { NDropdown } from "naive-ui";
+import { Folder, FolderOpen, FolderPlus, MoreHorizontal, Pencil, Plus, Trash2 } from "@lucide/vue";
+import { providerAvatar } from "../composables/useDataConfig.js";
 
-defineProps({
+const props = defineProps({
   node: { type: Object, required: true },
   selectedId: { type: String, default: null },
   expanded: { type: Object, required: true },
   depth: { type: Number, default: 0 },
 });
 
-defineEmits(["select", "toggle"]);
+const emit = defineEmits(["select", "toggle", "action"]);
 
-function statusDot(status) {
-  if (status === "active") return "ok";
-  if (status === "inactive") return "off";
+function statusDot(sw) {
+  if (sw === true) return "ok";
+  if (sw === false) return "off";
   return "warn";
+}
+
+const avatar = computed(() => providerAvatar(props.node.provider));
+
+// --- dropdown ---
+function renderIcon(icon) {
+  return () => h(icon, { size: 14 });
+}
+
+const groupActions = [
+  { label: "新增条目", key: "add-child-item", icon: renderIcon(Plus) },
+  { label: "新增子分组", key: "add-child-group", icon: renderIcon(FolderPlus) },
+  { type: "divider", key: "d1" },
+  { label: "编辑", key: "edit", icon: renderIcon(Pencil) },
+  { label: "删除", key: "delete", icon: renderIcon(Trash2) },
+];
+
+const itemActions = [
+  { label: "编辑", key: "edit", icon: renderIcon(Pencil) },
+  { label: "删除", key: "delete", icon: renderIcon(Trash2) },
+];
+
+function handleDropdownSelect(key) {
+  emit("action", { type: key, nodeId: props.node.id, node: props.node });
+}
+
+// --- right-click opens dropdown ---
+function onContextMenu(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const btn = e.currentTarget.querySelector(".more-btn");
+  if (btn) btn.click();
 }
 </script>
 
 <template>
   <div class="row-wrap">
-    
-    <!-- subGroup -->
+    <!-- Group row -->
     <div
       v-if="node.type === 'subGroup'"
       class="row group-row"
-      :style="{ paddingLeft: 6 + depth * 14 + 'px' }"
+      :style="{ paddingLeft: 4 + depth * 12 + 'px' }"
       @click="$emit('toggle', node.id)"
+      @contextmenu="onContextMenu"
     >
-      <span class="chev" :class="{ open: expanded[node.id] }">
-        <Folder :size="16" />
+      <span class="chev">
+        <FolderOpen v-if="expanded[node.id]" :size="16" />
+        <Folder v-else :size="16" />
       </span>
       <span v-if="node.icon" class="icon">{{ node.icon }}</span>
       <span class="name group-name">{{ node.name }}</span>
       <span class="count">{{ node.children?.length ?? 0 }}</span>
+
+      <n-dropdown trigger="click" :options="groupActions" @select="handleDropdownSelect">
+        <button type="button" class="more-btn" title="更多操作" @click.stop>
+          <MoreHorizontal :size="14" />
+        </button>
+      </n-dropdown>
     </div>
 
+    <!-- Children -->
     <div v-if="node.type === 'subGroup' && expanded[node.id]" class="children">
       <SidebarRow
         v-for="c in node.children"
@@ -47,26 +88,35 @@ function statusDot(status) {
         :depth="depth + 1"
         @select="(id) => $emit('select', id)"
         @toggle="(id) => $emit('toggle', id)"
+        @action="(payload) => $emit('action', payload)"
       />
     </div>
 
-    <!-- item -->
+    <!-- Item row -->
     <div
       v-else-if="node.type === 'item'"
       class="row item-row"
       :class="{ selected: selectedId === node.id }"
-      :style="{ paddingLeft: 6 + depth * 14 + 'px' }"
+      :style="{ paddingLeft: 4 + depth * 12 + 'px' }"
       @click="$emit('select', node.id)"
+      @contextmenu="onContextMenu"
     >
       <span class="chev placeholder" />
-      <span class="provider-badge">
-        <KeyIcon :size="13" />
+      <span class="provider-badge" :class="`badge-${node.switch ? 'active' : 'inactive'}`">
+        <img v-if="node.icon" class="provider-icon" :src="node.icon" :alt="node.provider" />
+        <span v-else class="provider-avatar" :style="{ background: avatar.color }">{{ avatar.letter }}</span>
       </span>
       <span class="item-text">
         <span class="name">{{ node.name }}</span>
         <span class="provider">{{ node.provider }}</span>
       </span>
-      <span class="status-dot" :class="statusDot(node.status)" />
+      <span class="status-dot" :class="statusDot(node.switch)" />
+
+      <n-dropdown trigger="click" :options="itemActions" @select="handleDropdownSelect">
+        <button type="button" class="more-btn" title="更多操作" @click.stop>
+          <MoreHorizontal :size="14" />
+        </button>
+      </n-dropdown>
     </div>
   </div>
 </template>
@@ -80,31 +130,31 @@ function statusDot(status) {
 .row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 8px;
-  margin: 1px 4px;
-  border-radius: 6px;
-  cursor: default;
+  gap: 4px;
+  padding: 0 6px;
+  margin: 3px 8px;
+  border-radius: 10px;
+  cursor: pointer;
   user-select: none;
   color: var(--text-primary);
   transition: background-color 100ms ease;
 }
 
 .group-row {
-  height: 26px;
+  min-height: 30px;
   font-weight: 600;
 }
 
 .group-row:hover {
-  background: var(--row-hover);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .item-row {
-  height: 40px;
+  min-height: 42px;
 }
 
 .item-row:hover:not(.selected) {
-  background: var(--row-hover);
+  background: rgba(255, 255, 255, 0.34);
 }
 
 .item-row.selected {
@@ -115,14 +165,9 @@ function statusDot(status) {
   width: 14px;
   height: 14px;
   color: var(--text-tertiary);
-  font-size: 9px;
   display: grid;
   place-items: center;
   transition: transform 140ms ease;
-}
-
-.chev.open {
-  transform: rotate(90deg);
 }
 
 .chev.placeholder {
@@ -138,10 +183,9 @@ function statusDot(status) {
 
 .group-name {
   flex: 1;
-  font-size: 12px;
+  font-size: 12.5px;
   letter-spacing: 0.01em;
-  color: var(--text-secondary);
-  text-transform: none;
+  color: var(--text-primary);
 }
 
 .count {
@@ -150,14 +194,69 @@ function statusDot(status) {
   font-variant-numeric: tabular-nums;
 }
 
+/* --- more button (dropdown trigger) --- */
+.more-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+
+.row:hover .more-btn,
+.more-btn:hover {
+  opacity: 1;
+}
+
+.more-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+}
+
+/* --- provider badge --- */
 .provider-badge {
   width: 24px;
   height: 24px;
   border-radius: 6px;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.55);
   color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.provider-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+.provider-avatar {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.badge-active {
+  color: #1e8e3e;
+}
+
+.badge-inactive {
+  color: var(--text-tertiary);
 }
 
 .item-text {
@@ -203,10 +302,19 @@ function statusDot(status) {
 .status-dot.off {
   background: rgba(142, 142, 147, 0.55);
 }
+</style>
 
-@media (prefers-color-scheme: dark) {
-  .provider-badge {
-    background: rgba(255, 255, 255, 0.08);
-  }
+<style>
+html[data-theme="dark"] .provider-badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .group-row:hover,
+html[data-theme="dark"] .item-row:hover:not(.selected) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .more-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 </style>

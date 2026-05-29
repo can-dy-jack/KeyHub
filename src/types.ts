@@ -1,28 +1,31 @@
-interface DataConfigType {
-    groups: (SubGroupType | ItemType)[];
+export interface DataConfigType {
+    groups: ConfigNode[];
 }
 
-interface DataConfigGroupType {
+export interface DataConfigGroupType {
     type: 'subGroup' | 'item';
 }
 
-interface SubGroupType extends DataConfigGroupType {
+export interface SubGroupType extends DataConfigGroupType {
     type: 'subGroup';
     id: string;
     name: string;
     icon?: string;
-    children: (SubGroupType | ItemType)[];
+    children: ConfigNode[];
 }
 
-interface ItemType extends DataConfigGroupType {
+export interface ItemType extends DataConfigGroupType {
     type: 'item';
     id: string;
     name: string;
     description: string;
+    website?: string;
     api_keys: string | string[];
     api_urls: string | string[];
     models: string | string[];
-    status: 'active' | 'inactive';
+    switch: boolean;
     provider: string;
     icon?: string; // url
 }
+
+export type ConfigNode = SubGroupType | ItemType;

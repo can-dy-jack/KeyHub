@@ -1,58 +1,48 @@
 <script setup>
+import { NButton } from "naive-ui";
+import { Plus } from "@lucide/vue";
 import SidebarIcon from "../icons/Sidebar.vue";
 
-defineEmits(["toggle"]);
+defineProps({
+  collapsed: { type: Boolean, default: false },
+  showAdd: { type: Boolean, default: false },
+});
+
+defineEmits(["toggle", "add-group"]);
 </script>
 
 <template>
-    <div class="box">
-        <span class="traffic-spacer" />
-    <button
-        class="icon-btn no-drag"
-        type="button"
-        :title="collapsed ? 'Show Sidebar' : 'Hide Sidebar'"
-        @click="$emit('toggle')"
-      >
+  <div class="box">
+    <n-button
+      v-if="showAdd"
+      quaternary
+      size="small"
+      title="新增分组"
+      aria-label="新增分组"
+      @click="$emit('add-group')"
+    >
+      <template #icon>
+        <Plus :size="15" />
+      </template>
+    </n-button>
+    <n-button
+      quaternary
+      size="small"
+      :title="collapsed ? 'Show Sidebar' : 'Hide Sidebar'"
+      :aria-label="collapsed ? 'Show Sidebar' : 'Hide Sidebar'"
+      @click="$emit('toggle')"
+    >
+      <template #icon>
         <SidebarIcon :size="18" />
-      </button>
-    </div>
+      </template>
+    </n-button>
+  </div>
 </template>
 
 <style scoped>
 .box {
-    display: flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
 }
-.traffic-spacer {
-  display: inline-block;
-  width: 68px;
-  height: 1px;
-}
-.icon-btn {
-  width: 28px;
-  height: 26px;
-  padding: 0;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
-  line-height: 1;
-  transition: background-color 120ms ease, color 120ms ease;
-  font-family: inherit;
-}
-
-.icon-btn:hover {
-  background: var(--row-hover);
-  color: var(--text-primary);
-}
-
-.no-drag {
-  -webkit-app-region: no-drag;
-}
-
 </style>

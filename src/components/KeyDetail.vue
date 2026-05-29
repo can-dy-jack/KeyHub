@@ -1,11 +1,18 @@
 <script setup>
 import { computed } from "vue";
+import { NButton } from "naive-ui";
 import ViewIcon from "../icons/View.vue";
 import CopyIcon from "../icons/Copy.vue";
+import { ChevronLeft, ChevronRight, Pencil, Plus, Trash2 } from "@lucide/vue";
+import { providerAvatar } from "../composables/useDataConfig.js";
 
 const props = defineProps({
   item: { type: Object, default: null },
+  hasPrev: { type: Boolean, default: false },
+  hasNext: { type: Boolean, default: false },
 });
+
+defineEmits(["add-item", "edit-item", "delete-item", "copy-field", "reveal-field", "prev-item", "next-item"]);
 
 function toArr(v) {
   if (v == null) return [];
@@ -15,18 +22,23 @@ function toArr(v) {
 const apiKeys = computed(() => toArr(props.item?.api_keys));
 const apiUrls = computed(() => toArr(props.item?.api_urls));
 const models = computed(() => toArr(props.item?.models));
+const avatar = computed(() => providerAvatar(props.item?.provider));
 </script>
 
 <template>
   <div class="detail">
     <div v-if="item" class="detail-scroll">
       <div class="header">
+        <div class="icon-hero">
+          <img v-if="item.icon" class="icon-image" :src="item.icon" :alt="item.provider || item.name" />
+          <span v-else class="provider-avatar-hero" :style="{ background: avatar.color }">{{ avatar.letter }}</span>
+        </div>
         <div class="meta-line">{{ item.provider }}</div>
         <h1 class="title">{{ item.name }}</h1>
         <div class="badges">
-          <span class="badge" :class="`badge-${item.status}`">
+          <span class="badge" :class="`badge-${item.switch ? 'active' : 'inactive'}`">
             <span class="badge-dot" />
-            {{ item.status }}
+            {{ item.switch ? 'active' : 'inactive' }}
           </span>
         </div>
       </div>
@@ -35,14 +47,29 @@ const models = computed(() => toArr(props.item?.models));
         <p class="value note">{{ item.description }}</p>
       </section>
 
+      <section v-if="item.website" class="field">
+        <label>Website</label>
+        <div class="value mono row-line">
+          <a class="link" :href="item.website" target="_blank" rel="noreferrer">{{ item.website }}</a>
+          <n-button text size="tiny" @click="$emit('copy-field', item.website)">
+            <template #icon>
+              <CopyIcon :size="12" />
+            </template>
+            Copy
+          </n-button>
+        </div>
+      </section>
+
       <section v-if="apiUrls.length" class="field">
         <label>API URL{{ apiUrls.length > 1 ? "s" : "" }}</label>
         <div v-for="(u, i) in apiUrls" :key="i" class="value mono row-line">
           <span>{{ u }}</span>
-          <button class="ghost-btn icon-text" type="button">
-            <CopyIcon :size="12" />
-            <span>Copy</span>
-          </button>
+          <n-button text size="tiny" @click="$emit('copy-field', u)">
+            <template #icon>
+              <CopyIcon :size="12" />
+            </template>
+            Copy
+          </n-button>
         </div>
       </section>
 
@@ -50,14 +77,18 @@ const models = computed(() => toArr(props.item?.models));
         <label>API Key{{ apiKeys.length > 1 ? "s" : "" }}</label>
         <div v-for="(k, i) in apiKeys" :key="i" class="value mono row-line">
           <span>{{ k }}</span>
-          <button class="ghost-btn icon-text" type="button">
-            <CopyIcon :size="12" />
-            <span>Copy</span>
-          </button>
-          <button class="ghost-btn icon-text" type="button">
-            <ViewIcon :size="12" />
-            <span>Reveal</span>
-          </button>
+          <n-button text size="tiny" @click="$emit('copy-field', k)">
+            <template #icon>
+              <CopyIcon :size="12" />
+            </template>
+            Copy
+          </n-button>
+          <n-button text size="tiny" @click="$emit('reveal-field', k)">
+            <template #icon>
+              <ViewIcon :size="12" />
+            </template>
+            Reveal
+          </n-button>
         </div>
       </section>
 
@@ -67,17 +98,52 @@ const models = computed(() => toArr(props.item?.models));
           <span v-for="(m, i) in models" :key="i" class="chip">{{ m }}</span>
         </div>
       </section>
-
-      <section class="field actions">
-        <button class="primary-btn" type="button">Test Connection</button>
-        <button class="ghost-btn" type="button">Edit</button>
-        <button class="ghost-btn danger" type="button">Delete</button>
-      </section>
     </div>
 
     <div v-else class="empty">
       <div class="empty-mark">⌘</div>
       <p>No Item Selected</p>
+      <n-button type="primary" size="small" @click="$emit('add-item')">
+        <template #icon>
+          <Plus :size="13" />
+        </template>
+        Add Item
+      </n-button>
+    </div>
+
+    <div v-if="item" class="detail-footer">
+      <div class="footer-nav">
+        <n-button quaternary size="small" :disabled="!hasPrev" @click="$emit('prev-item')">
+          <template #icon>
+            <ChevronLeft :size="16" />
+          </template>
+        </n-button>
+        <n-button quaternary size="small" :disabled="!hasNext" @click="$emit('next-item')">
+          <template #icon>
+            <ChevronRight :size="16" />
+          </template>
+        </n-button>
+      </div>
+      <div class="footer-actions">
+        <n-button type="primary" size="small" @click="$emit('add-item')">
+          <template #icon>
+            <Plus :size="13" />
+          </template>
+          Add Item
+        </n-button>
+        <n-button secondary size="small" @click="$emit('edit-item')">
+          <template #icon>
+            <Pencil :size="13" />
+          </template>
+          Edit
+        </n-button>
+        <n-button secondary size="small" type="error" @click="$emit('delete-item')">
+          <template #icon>
+            <Trash2 :size="13" />
+          </template>
+          Delete
+        </n-button>
+      </div>
     </div>
   </div>
 </template>
@@ -95,7 +161,7 @@ const models = computed(() => toArr(props.item?.models));
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 32px 48px 48px;
+  padding: 20px 32px 16px;
   max-width: 760px;
   width: 100%;
   margin: 0 auto;
@@ -111,7 +177,35 @@ const models = computed(() => toArr(props.item?.models));
 }
 
 .header {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+}
+
+.icon-hero {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+}
+
+.icon-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.provider-avatar-hero {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
 }
 
 .meta-line {
@@ -168,7 +262,7 @@ const models = computed(() => toArr(props.item?.models));
 }
 
 .field {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .field label {
@@ -178,20 +272,19 @@ const models = computed(() => toArr(props.item?.models));
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-tertiary);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .value {
   font-size: 13px;
   color: var(--text-primary);
-  padding: 10px 12px;
+  padding: 8px 12px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.55);
   border: 1px solid var(--divider);
 }
 
 .value + .value {
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .mono {
@@ -210,6 +303,20 @@ const models = computed(() => toArr(props.item?.models));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.link {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 
 .note {
@@ -234,49 +341,25 @@ const models = computed(() => toArr(props.item?.models));
   border: 1px solid var(--divider);
 }
 
-.actions {
+/* Footer bar — fixed at bottom */
+.detail-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid var(--divider);
+  flex-shrink: 0;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.footer-actions {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-}
-
-.primary-btn,
-.ghost-btn {
-  height: 30px;
-  padding: 0 14px;
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  border: 1px solid var(--divider-strong);
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--text-primary);
-  transition: background-color 120ms ease, filter 120ms ease;
-}
-
-.icon-text {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ghost-btn:hover {
-  background: rgba(255, 255, 255, 0.95);
-}
-
-.ghost-btn.danger {
-  color: #c5302a;
-}
-
-.primary-btn {
-  background: var(--accent);
-  border-color: transparent;
-  color: #1d1300;
-}
-
-.primary-btn:hover {
-  filter: brightness(0.96);
 }
 
 .empty {
@@ -297,39 +380,17 @@ const models = computed(() => toArr(props.item?.models));
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: rgba(0, 0, 0, 0.05);
   color: var(--text-tertiary);
   font-size: 24px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .value,
-  .chip {
-    background: rgba(255, 255, 255, 0.04);
-  }
-  .primary-btn,
-  .ghost-btn {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-primary);
-  }
-  .ghost-btn:hover {
-    background: rgba(255, 255, 255, 0.14);
-  }
-  .primary-btn {
-    background: var(--accent);
-    color: #1d1300;
-  }
-  .badge-active {
-    color: #6dd494;
-  }
-  .badge-inactive {
-    color: #b8b8be;
-  }
-  .ghost-btn.danger {
-    color: #ff6961;
-  }
-  .empty-mark {
-    background: rgba(255, 255, 255, 0.06);
-  }
+</style>
+
+<style>
+html[data-theme="dark"] .badge-active {
+  color: #6dd494;
+}
+html[data-theme="dark"] .badge-inactive {
+  color: #b8b8be;
 }
 </style>

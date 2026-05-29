@@ -23,7 +23,7 @@
         "hiddenTitle": true,
         "shadow": true,
         "windowEffects": {
-          "effects": ["sidebar"],
+          "effects": ["popover", "sidebar"],
           "state": "active",
           "radius": 18
         }

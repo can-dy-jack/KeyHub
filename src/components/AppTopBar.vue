@@ -1,17 +1,19 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, h, onMounted, ref } from "vue";
+import { NButton, NDropdown } from "naive-ui";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Pin } from "@lucide/vue";
+import { Monitor, Moon, Pin, Settings2, Sun } from "@lucide/vue";
 import { useWindowDrag } from "../composables/useWindowDrag.js";
 import SideButton from "./SideButton.vue";
 
-defineProps({
+const props = defineProps({
   collapsed: { type: Boolean, required: true },
   title: { type: String, default: "KeyHub" },
   subtitle: { type: String, default: "" },
+  themeMode: { type: String, default: "system" },
 });
 
-defineEmits(["toggle"]);
+const emit = defineEmits(["toggle", "open-config", "update-theme"]);
 
 const { startWindowDrag } = useWindowDrag();
 
@@ -59,6 +61,20 @@ async function toggleAlwaysOnTop() {
   }
 }
 
+function renderIcon(icon) {
+  return () => h(icon, { size: 14 });
+}
+
+const themeOptions = [
+  { label: "跟随系统", key: "system", icon: renderIcon(Monitor) },
+  { label: "浅色", key: "light", icon: renderIcon(Sun) },
+  { label: "深色", key: "dark", icon: renderIcon(Moon) },
+];
+
+function handleThemeSelect(key) {
+  emit("update-theme", key);
+}
+
 onMounted(() => {
   syncAlwaysOnTopState();
 });
@@ -76,18 +92,42 @@ onMounted(() => {
     </div>
 
     <div class="toolbar-right no-drag">
-      <button
-        class="pin-toggle"
-        :class="{ 'pin-toggle-active': alwaysOnTop }"
-        type="button"
+      <n-dropdown trigger="click" :options="themeOptions" @select="handleThemeSelect">
+        <n-button
+          quaternary
+          size="small"
+          aria-label="主题设置"
+          title="主题设置"
+        >
+          <template #icon>
+            <Monitor :size="14" />
+          </template>
+        </n-button>
+      </n-dropdown>
+      <n-button
+        quaternary
+        size="small"
+        aria-label="配置管理"
+        title="配置管理"
+        @click="$emit('open-config')"
+      >
+        <template #icon>
+          <Settings2 :size="14" />
+        </template>
+      </n-button>
+      <n-button
+        quaternary
+        size="small"
+        :type="alwaysOnTop ? 'warning' : 'default'"
         :disabled="!isWindowStateReady || isTogglingAlwaysOnTop || windowControlUnavailable"
-        :aria-pressed="alwaysOnTop"
         :aria-label="pinButtonTitle"
         :title="pinButtonTitle"
         @click="toggleAlwaysOnTop"
       >
-        <Pin :size="14" :stroke-width="2.1" />
-      </button>
+        <template #icon>
+          <Pin :size="14" :stroke-width="2.1" />
+        </template>
+      </n-button>
     </div>
   </header>
 </template>
@@ -100,12 +140,13 @@ onMounted(() => {
   padding: 0 12px;
   gap: 12px;
 }
-
+.toolbar-left  {
+  padding-left: 68px;
+}
 .toolbar-left,
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
 .toolbar-right {
@@ -134,39 +175,6 @@ onMounted(() => {
   color: var(--text-secondary);
   white-space: nowrap;
 }
-
-.pin-toggle {
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease,
-    border-color 120ms ease;
-}
-
-.pin-toggle:hover:enabled {
-  background: rgba(0, 0, 0, 0.06);
-  color: var(--text-primary);
-}
-
-.pin-toggle:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.pin-toggle-active {
-  background: var(--accent-soft);
-  border-color: rgba(240, 180, 0, 0.44);
-  color: #8b6500;
-}
-
 
 .search {
   display: flex;
@@ -208,20 +216,13 @@ onMounted(() => {
   -webkit-app-region: no-drag;
 }
 
-@media (prefers-color-scheme: dark) {
-  .pin-toggle:hover:enabled {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-primary);
-  }
-  .pin-toggle-active {
-    border-color: rgba(240, 180, 0, 0.5);
-    color: #f7c53d;
-  }
-  .search {
-    background: rgba(255, 255, 255, 0.08);
-  }
-  .search:focus-within {
-    background: rgba(255, 255, 255, 0.12);
-  }
+</style>
+
+<style>
+html[data-theme="dark"] .search {
+  background: rgba(255, 255, 255, 0.08);
+}
+html[data-theme="dark"] .search:focus-within {
+  background: rgba(255, 255, 255, 0.12);
 }
 </style>
