@@ -1,9 +1,8 @@
 <script setup>
-import { computed } from "vue";
-import { NButton } from "naive-ui";
-import ViewIcon from "../icons/View.vue";
-import CopyIcon from "../icons/Copy.vue";
-import { ChevronLeft, ChevronRight, Pencil, Plus, Trash2 } from "@lucide/vue";
+import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { NButton, NCollapse, NCollapseItem, useMessage } from "naive-ui";
+import { Check, ChevronLeft, ChevronRight, Copy, Eye, EyeOff, Pencil, Plus, Trash2 } from "@lucide/vue";
 import { providerAvatar } from "../composables/useDataConfig.js";
 
 const props = defineProps({
@@ -12,7 +11,10 @@ const props = defineProps({
   hasNext: { type: Boolean, default: false },
 });
 
-defineEmits(["add-item", "edit-item", "delete-item", "copy-field", "reveal-field", "prev-item", "next-item"]);
+const emit = defineEmits(["add-item", "edit-item", "delete-item", "prev-item", "next-item"]);
+
+const { t } = useI18n();
+const message = useMessage();
 
 function toArr(v) {
   if (v == null) return [];
@@ -23,80 +25,181 @@ const apiKeys = computed(() => toArr(props.item?.api_keys));
 const apiUrls = computed(() => toArr(props.item?.api_urls));
 const models = computed(() => toArr(props.item?.models));
 const avatar = computed(() => providerAvatar(props.item?.provider));
+
+const hasAdvancedConfig = computed(() => {
+  const item = props.item;
+  if (!item) return false;
+  return !!(item.balance_url || item.balance_amount_path || item.balance_unit_path || item.usage_url || item.usage_path);
+});
+
+// --- copy with feedback ---
+const copiedFields = ref(new Set());
+
+function copyValue(value) {
+  const text = Array.isArray(value) ? value.join("\n") : String(value ?? "");
+  navigator.clipboard?.writeText(text).then(
+    () => {
+      const key = text;
+      copiedFields.value.add(key);
+      message.success(t("detail.copySuccess"));
+      setTimeout(() => {
+        copiedFields.value.delete(key);
+      }, 2000);
+    },
+    () => {
+      window.prompt(t("app.copyPrompt"), text);
+    },
+  );
+}
+
+function isCopied(value) {
+  const text = Array.isArray(value) ? value.join("\n") : String(value ?? "");
+  return copiedFields.value.has(text);
+}
+
+// --- key mask / reveal ---
+const revealedKeys = ref(new Set());
+
+function maskKey(value) {
+  const text = String(value ?? "");
+  if (text.length <= 8) return "*".repeat(text.length);
+  return text.slice(0, 4) + "*".repeat(text.length - 8) + text.slice(-4);
+}
+
+function toggleReveal(key) {
+  if (revealedKeys.value.has(key)) {
+    revealedKeys.value.delete(key);
+  } else {
+    revealedKeys.value.add(key);
+  }
+}
+
+function isRevealed(key) {
+  return revealedKeys.value.has(key);
+}
 </script>
 
 <template>
   <div class="detail">
     <div v-if="item" class="detail-scroll">
+      <!-- Header — sticky, horizontal layout -->
       <div class="header">
-        <div class="icon-hero">
+        <div class="header-icon">
           <img v-if="item.icon" class="icon-image" :src="item.icon" :alt="item.provider || item.name" />
           <span v-else class="provider-avatar-hero" :style="{ background: avatar.color }">{{ avatar.letter }}</span>
         </div>
-        <div class="meta-line">{{ item.provider }}</div>
-        <h1 class="title">{{ item.name }}</h1>
-        <div class="badges">
-          <span class="badge" :class="`badge-${item.switch ? 'active' : 'inactive'}`">
-            <span class="badge-dot" />
-            {{ item.switch ? $t('detail.statusActive') : $t('detail.statusInactive') }}
-          </span>
+
+        <div class="header-main">
+          <div class="header-title-row">
+            <h1 class="title">{{ item.name }}</h1>
+            <span v-if="item.provider" class="provider-tab">{{ item.provider }}</span>
+            <span class="badge" :class="`badge-${item.switch ? 'active' : 'inactive'}`">
+              <span class="badge-dot" />
+              {{ item.switch ? $t('detail.statusActive') : $t('detail.statusInactive') }}
+            </span>
+          </div>
+
+          <div v-if="models.length" class="header-models">
+            <span v-for="(m, i) in models" :key="i" class="chip">{{ m }}</span>
+          </div>
+          
         </div>
       </div>
 
       <section v-if="item.description" class="field">
-        <p class="value note">{{ item.description }}</p>
+        <p class="description">{{ item.description }}</p>
       </section>
 
+      <!-- Website -->
       <section v-if="item.website" class="field">
         <label>{{ $t('detail.website') }}</label>
         <div class="value mono row-line">
           <a class="link" :href="item.website" target="_blank" rel="noreferrer">{{ item.website }}</a>
-          <n-button text size="tiny" @click="$emit('copy-field', item.website)">
+          <n-button text size="tiny" @click="copyValue(item.website)">
             <template #icon>
-              <CopyIcon :size="12" />
+              <Check v-if="isCopied(item.website)" :size="12" color="#22c55e" />
+              <Copy v-else :size="12" />
             </template>
-            {{ $t('detail.copy') }}
           </n-button>
         </div>
       </section>
 
+      <!-- API URLs -->
       <section v-if="apiUrls.length" class="field">
         <label>{{ apiUrls.length > 1 ? $t('detail.apiUrls') : $t('detail.apiUrl') }}</label>
         <div v-for="(u, i) in apiUrls" :key="i" class="value mono row-line">
           <span>{{ u }}</span>
-          <n-button text size="tiny" @click="$emit('copy-field', u)">
+          <n-button text size="tiny" @click="copyValue(u)">
             <template #icon>
-              <CopyIcon :size="12" />
+              <Check v-if="isCopied(u)" :size="12" color="#22c55e" />
+              <Copy v-else :size="12" />
             </template>
-            {{ $t('detail.copy') }}
           </n-button>
         </div>
       </section>
 
+      <!-- API Keys -->
       <section v-if="apiKeys.length" class="field">
         <label>{{ apiKeys.length > 1 ? $t('detail.apiKeys') : $t('detail.apiKey') }}</label>
         <div v-for="(k, i) in apiKeys" :key="i" class="value mono row-line">
-          <span>{{ k }}</span>
-          <n-button text size="tiny" @click="$emit('copy-field', k)">
+          <span class="key-text">{{ isRevealed(k) ? k : maskKey(k) }}</span>
+          <n-button text size="tiny" @click="copyValue(k)">
             <template #icon>
-              <CopyIcon :size="12" />
+              <Check v-if="isCopied(k)" :size="12" color="#22c55e" />
+              <Copy v-else :size="12" />
             </template>
-            {{ $t('detail.copy') }}
           </n-button>
-          <n-button text size="tiny" @click="$emit('reveal-field', k)">
+          <n-button text size="tiny" @click="toggleReveal(k)">
             <template #icon>
-              <ViewIcon :size="12" />
+              <EyeOff v-if="isRevealed(k)" :size="12" />
+              <Eye v-else :size="12" />
             </template>
-            {{ $t('detail.reveal') }}
           </n-button>
         </div>
       </section>
 
-      <section v-if="models.length" class="field">
-        <label>{{ $t('detail.models') }}</label>
-        <div class="chips">
-          <span v-for="(m, i) in models" :key="i" class="chip">{{ m }}</span>
-        </div>
+      <!-- 高级配置 -->
+      <section v-if="hasAdvancedConfig" class="field">
+        <n-collapse :default-expanded-names="[]">
+          <n-collapse-item :title="$t('editor.advanced')" name="advanced">
+            <div class="advanced-detail-grid">
+              <div v-if="item.balance_url || item.balance_amount_path || item.balance_unit_path" class="advanced-group">
+                <template v-if="item.balance_url">
+                  <label class="detail-field">
+                    <span class="detail-field-label">{{ $t('editor.balanceUrl') }}</span>
+                    <span class="value mono">{{ item.balance_url }}</span>
+                  </label>
+                </template>
+                <template v-if="item.balance_amount_path">
+                  <label class="detail-field">
+                    <span class="detail-field-label">{{ $t('editor.balanceAmountPath') }}</span>
+                    <span class="value mono">{{ item.balance_amount_path }}</span>
+                  </label>
+                </template>
+                <template v-if="item.balance_unit_path">
+                  <label class="detail-field">
+                    <span class="detail-field-label">{{ $t('editor.balanceUnitPath') }}</span>
+                    <span class="value mono">{{ item.balance_unit_path }}</span>
+                  </label>
+                </template>
+              </div>
+              <div v-if="item.usage_url || item.usage_path" class="advanced-group">
+                <template v-if="item.usage_url">
+                  <label class="detail-field">
+                    <span class="detail-field-label">{{ $t('editor.usageUrl') }}</span>
+                    <span class="value mono">{{ item.usage_url }}</span>
+                  </label>
+                </template>
+                <template v-if="item.usage_path">
+                  <label class="detail-field">
+                    <span class="detail-field-label">{{ $t('editor.usagePath') }}</span>
+                    <span class="value mono">{{ item.usage_path }}</span>
+                  </label>
+                </template>
+              </div>
+            </div>
+          </n-collapse-item>
+        </n-collapse>
       </section>
     </div>
 
@@ -167,62 +270,88 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
   margin: 0 auto;
 }
 
-.detail-scroll::-webkit-scrollbar {
-  width: 10px;
-}
-
-.detail-scroll::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.14);
-}
-
+/* ---- Sticky header ---- */
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 4px 0 16px;
   margin-bottom: 16px;
+  /* background: var(--window-bg); */
+  /* border-bottom: 1px solid var(--divider); */
 }
 
-.icon-hero {
-  width: 46px;
-  height: 46px;
+.header-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: grid;
   place-items: center;
-  margin-bottom: 10px;
-  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .icon-image {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
 }
 
 .provider-avatar-hero {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #fff;
   line-height: 1;
 }
 
-.meta-line {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-  margin-bottom: 6px;
+.header-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .title {
-  margin: 0 0 12px;
-  font-size: 26px;
+  margin: 0;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.provider-tab {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px 6px 0 0;
+  background: rgba(240, 180, 0, 0.12);
+  color: var(--primary-color, #c99200);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--primary-color, #f0b400);
+}
+
+.header-models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .badges {
@@ -234,7 +363,7 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
@@ -261,6 +390,15 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
   color: #5b5b60;
 }
 
+.description {
+  margin-bottom: 10px;
+  border: none;
+  padding: 0;
+  padding-left: 10px;
+  border-left: 2px solid rgba(0, 0, 0, 0.12);
+  color: var(--text-secondary);
+}
+/* ---- Fields ---- */
 .field {
   margin-bottom: 12px;
 }
@@ -305,6 +443,10 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
   white-space: nowrap;
 }
 
+.key-text {
+  user-select: text;
+}
+
 .link {
   flex: 1;
   min-width: 0;
@@ -325,6 +467,41 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
   line-height: 1.5;
 }
 
+/* ---- 高级配置 ---- */
+.advanced-detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.advanced-group {
+  padding: 10px 14px;
+  border-left: 3px solid var(--divider);
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.advanced-group + .advanced-group {
+  margin-top: 8px;
+}
+
+.detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-field-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -341,7 +518,7 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
   border: 1px solid var(--divider);
 }
 
-/* Footer bar — fixed at bottom */
+/* ---- Footer ---- */
 .detail-footer {
   display: flex;
   align-items: center;
@@ -362,6 +539,7 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
   flex-wrap: wrap;
 }
 
+/* ---- Empty state ---- */
 .empty {
   flex: 1;
   min-height: 0;
@@ -383,7 +561,6 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
   color: var(--text-tertiary);
   font-size: 24px;
 }
-
 </style>
 
 <style>
@@ -392,5 +569,8 @@ html[data-theme="dark"] .badge-active {
 }
 html[data-theme="dark"] .badge-inactive {
   color: #b8b8be;
+}
+html[data-theme="dark"] .header-icon {
+  background: rgba(255, 255, 255, 0.06);
 }
 </style>

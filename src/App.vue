@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { darkTheme, NConfigProvider } from "naive-ui";
+import { darkTheme, NConfigProvider, NMessageProvider } from "naive-ui";
 import AppSidebar from "./components/AppSidebar.vue";
 import AppTopBar from "./components/AppTopBar.vue";
 import KeyDetail from "./components/KeyDetail.vue";
@@ -275,6 +275,7 @@ onMounted(async () => {
 
 <template>
   <n-config-provider :theme="isDark ? darkTheme : null" :theme-overrides="themeOverrides" :locale="naiveLocale" :date-locale="naiveDateLocale">
+    <n-message-provider>
     <div class="app-shell">
       <AppSidebar
         :collapsed="sidebarCollapsed"
@@ -355,6 +356,7 @@ onMounted(async () => {
         @change="handleImportFile"
       />
     </div>
+    </n-message-provider>
   </n-config-provider>
 </template>
 
@@ -380,6 +382,8 @@ onMounted(async () => {
   --row-selected: rgba(60, 60, 67, 0.1);
   --window-bg: rgba(246, 246, 246, 0.72);
   --sidebar-bg: rgba(228, 228, 228, 0.55);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.16);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.28);
 }
 
 html,
@@ -545,6 +549,8 @@ html[data-theme="dark"] {
   --row-selected: rgba(255, 255, 255, 0.09);
   --window-bg: rgba(36, 36, 38, 0.72);
   --sidebar-bg: rgba(28, 28, 30, 0.2);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
   --accent-soft: rgba(240, 180, 0, 0.3);
 }
 
@@ -559,4 +565,34 @@ html[data-theme="dark"] .modal-card {
 html[data-theme="dark"] .icon-close {
   color: var(--text-primary);
 }
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--scrollbar-thumb);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
 </style>

@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onUnmounted } from "vue";
+import { ref, onUnmounted, watch } from "vue";
 import SidebarRow from "./SidebarRow.vue";
 import SideButton from "./SideButton.vue";
 import { useWindowDrag } from "../composables/useWindowDrag.js";
 
-defineProps({
+const props = defineProps({
     collapsed: { type: Boolean, required: true },
     groups: { type: Array, required: true },
     selectedId: { type: String, default: null },
@@ -12,7 +12,18 @@ defineProps({
 
 defineEmits(["select", "toggle", "add-group", "node-action"]);
 
-const expanded = ref({ llm: true, cloud: true });
+const expanded = ref({});
+
+// auto-expand first subGroup on load
+watch(() => props.groups, (groups) => {
+    if (groups.length) {
+        const firstGroup = groups.find(g => g.type === "subGroup");
+        if (firstGroup) {
+            expanded.value[firstGroup.id] = true;
+        }
+    }
+}, { immediate: true });
+
 function toggleExpand(id) {
     expanded.value[id] = !expanded.value[id];
 }
@@ -135,15 +146,6 @@ onUnmounted(() => {
     transition: opacity 160ms ease;
 }
 
-.sidebar::-webkit-scrollbar {
-    width: 8px;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.12);
-}
-
 @media (max-width: 980px) {
     .sidebar {
         flex-basis: 210px;
@@ -204,10 +206,6 @@ onUnmounted(() => {
 </style>
 
 <style>
-html[data-theme="dark"] .sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.16);
-}
-
 html[data-theme="dark"] .sidebar-info {
     background: rgba(255, 255, 255, 0.04);
 }

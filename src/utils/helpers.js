@@ -27,6 +27,12 @@ export function createEmptyNodeForm(kind = "subGroup") {
     models: [""],
     switch: true,
     targetGroupId: null,
+    // 高级配置
+    balance_url: "",
+    balance_amount_path: "",
+    balance_unit_path: "",
+    usage_url: "",
+    usage_path: "",
   };
 }
 

@@ -64,7 +64,7 @@ function normalizeProviderName(provider) {
     .trim();
 }
 
-function resolveProviderIcon(provider, website) {
+export function resolveProviderIcon(provider, website) {
   const normalizedProvider = normalizeProviderName(provider);
   if (normalizedProvider) {
     if (PROVIDER_ICON_FILES[normalizedProvider]) {
@@ -362,15 +362,21 @@ export function useDataConfig() {
       models: parseListField(form.models),
       switch: form.switch !== false,
       icon: resolveProviderIcon(form.provider, form.website),
+      // 高级配置
+      balance_url: String(form.balance_url || "").trim(),
+      balance_amount_path: String(form.balance_amount_path || "").trim(),
+      balance_unit_path: String(form.balance_unit_path || "").trim(),
+      usage_url: String(form.usage_url || "").trim(),
+      usage_path: String(form.usage_path || "").trim(),
     };
 
-    if (!nextNode.website) {
-      delete nextNode.website;
-    }
-
-    if (!nextNode.icon) {
-      delete nextNode.icon;
-    }
+    if (!nextNode.website) delete nextNode.website;
+    if (!nextNode.icon) delete nextNode.icon;
+    if (!nextNode.balance_url) delete nextNode.balance_url;
+    if (!nextNode.balance_amount_path) delete nextNode.balance_amount_path;
+    if (!nextNode.balance_unit_path) delete nextNode.balance_unit_path;
+    if (!nextNode.usage_url) delete nextNode.usage_url;
+    if (!nextNode.usage_path) delete nextNode.usage_path;
 
     return nextNode;
   }

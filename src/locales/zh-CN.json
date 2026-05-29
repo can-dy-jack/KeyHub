@@ -60,6 +60,7 @@
     "models": "模型",
     "copy": "复制",
     "reveal": "查看",
+    "copySuccess": "已复制到剪贴板",
     "statusActive": "可用",
     "statusInactive": "停用"
   },
@@ -86,7 +87,19 @@
     "active": "启用",
     "addField": "+ 添加",
     "save": "保存",
-    "cancel": "取消"
+    "cancel": "取消",
+    "advanced": "高级配置",
+    "balanceUrl": "余额查询接口",
+    "balanceUrlPlaceholder": "https://api.example.com/v1/balance",
+    "balanceAmountPath": "余额数量路径",
+    "balanceAmountPathPlaceholder": "data.total_balance",
+    "balanceUnitPath": "余额单位路径",
+    "balanceUnitPathPlaceholder": "data.unit",
+    "usageUrl": "用量查询接口",
+    "usageUrlPlaceholder": "https://api.example.com/v1/usage",
+    "usagePath": "用量数据路径",
+    "usagePathPlaceholder": "data.usage",
+    "pathNote": "JSON 路径，支持点号分隔，如 data.total_balance"
   },
   "config": {
     "kicker": "配置文件",
@@ -95,7 +108,14 @@
     "import": "导入",
     "refresh": "刷新",
     "cancel": "取消",
-    "save": "保存到配置文件"
+    "save": "保存到配置文件",
+    "treeView": "树形视图",
+    "source": "源代码",
+    "download": "下载",
+    "lines": "行",
+    "jsonValid": "JSON 有效",
+    "jsonInvalid": "JSON 无效",
+    "emptyTree": "暂无配置数据"
   },
   "deleteConfirm": {
     "kicker": "确认删除",

@@ -60,6 +60,7 @@
     "models": "Models",
     "copy": "Copy",
     "reveal": "Reveal",
+    "copySuccess": "Copied to clipboard",
     "statusActive": "Active",
     "statusInactive": "Inactive"
   },
@@ -86,7 +87,19 @@
     "active": "Active",
     "addField": "+ Add",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "advanced": "Advanced",
+    "balanceUrl": "Balance API",
+    "balanceUrlPlaceholder": "https://api.example.com/v1/balance",
+    "balanceAmountPath": "Balance Amount Path",
+    "balanceAmountPathPlaceholder": "data.total_balance",
+    "balanceUnitPath": "Balance Unit Path",
+    "balanceUnitPathPlaceholder": "data.unit",
+    "usageUrl": "Usage API",
+    "usageUrlPlaceholder": "https://api.example.com/v1/usage",
+    "usagePath": "Usage Data Path",
+    "usagePathPlaceholder": "data.usage",
+    "pathNote": "JSON path, dot-separated, e.g. data.total_balance"
   },
   "config": {
     "kicker": "Config File",
@@ -95,7 +108,14 @@
     "import": "Import",
     "refresh": "Refresh",
     "cancel": "Cancel",
-    "save": "Save to Config"
+    "save": "Save to Config",
+    "treeView": "Tree View",
+    "source": "Source",
+    "download": "Download",
+    "lines": "lines",
+    "jsonValid": "Valid JSON",
+    "jsonInvalid": "Invalid JSON",
+    "emptyTree": "No configuration data"
   },
   "deleteConfirm": {
     "kicker": "Confirm Delete",
