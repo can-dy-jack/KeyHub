@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "schemaVersion": "1.0.0",
+    "createdAt": "2026-05-29T00:00:00Z",
+    "updatedAt": "2026-05-29T00:00:00Z",
+    "editSequence": 1
+  },
+  "preferences": {
+    "theme": "system",
+    "showExpiryDaysWarning": 7,
+    "autoRefreshUsage": false,
+    "keyStorageMode": "plaintext"
+  },
+  "groups": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "children": [
+        {
+          "id": "openai-prod",
+          "name": "Production",
+          "children": []
+        }
+      ],
+      "items": [
+        {
+          "id": "k-openai-prod-1",
+          "name": "OpenAI Prod Key 1",
+          "provider": "openai",
+          "apiKey": "sk-xxxx",
+          "baseUrl": "https://api.openai.com/v1",
+          "models": [
+            "gpt-4.1",
+            "gpt-4o-mini"
+          ],
+          "status": "active",
+          "expiresAt": "2026-12-31",
+          "notes": "primary key"
+        }
+      ]
+    }
+  ],
+  "usageCache": {},
+  "audit": {
+    "lastValidationAt": null,
+    "lastValidationError": null
+  }
+}
