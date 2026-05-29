@@ -62,7 +62,14 @@
     "reveal": "查看",
     "copySuccess": "已复制到剪贴板",
     "statusActive": "可用",
-    "statusInactive": "停用"
+    "statusInactive": "停用",
+    "fetchBalance": "获取余额",
+    "fetchUsage": "获取用量",
+    "balanceData": "余额数据",
+    "usageData": "用量数据",
+    "fetchError": "获取失败",
+    "fetching": "获取中…",
+    "noData": "暂无数据"
   },
   "editor": {
     "kicker": "数据管理",

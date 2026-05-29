@@ -37,6 +37,29 @@ export function createEmptyNodeForm(kind = "subGroup") {
 }
 
 /**
+ * Resolve a dot-notation JSON path against an object.
+ * Supports "data.total_balance" and "data[0].value" forms.
+ * Returns undefined if any segment is missing.
+ */
+export function resolveJsonPath(obj, path) {
+  if (obj == null || !path) return undefined;
+  const segments = String(path).split(".");
+  let current = obj;
+  for (const seg of segments) {
+    if (current == null) return undefined;
+    const bracketMatch = seg.match(/^(.+?)\[(\d+)\]$/);
+    if (bracketMatch) {
+      current = current[bracketMatch[1]];
+      if (current == null) return undefined;
+      current = current[parseInt(bracketMatch[2], 10)];
+    } else {
+      current = current[seg];
+    }
+  }
+  return current;
+}
+
+/**
  * Recursively build a tree-select option list from config nodes.
  * Only subGroup nodes become selectable options.
  */

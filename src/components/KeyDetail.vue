@@ -2,8 +2,9 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { NButton, NCollapse, NCollapseItem, useMessage } from "naive-ui";
-import { Check, ChevronLeft, ChevronRight, Copy, Eye, EyeOff, Pencil, Plus, Trash2 } from "@lucide/vue";
+import { Check, ChevronLeft, ChevronRight, Copy, Eye, EyeOff, Pencil, Plus, RefreshCw, Trash2 } from "@lucide/vue";
 import { providerAvatar } from "../composables/useDataConfig.js";
+import { resolveJsonPath } from "../utils/helpers.js";
 
 const props = defineProps({
   item: { type: Object, default: null },
@@ -11,7 +12,7 @@ const props = defineProps({
   hasNext: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["add-item", "edit-item", "delete-item", "prev-item", "next-item"]);
+const emit = defineEmits(["add-item", "edit-item", "delete-item", "prev-item", "next-item", "update-item-data"]);
 
 const { t } = useI18n();
 const message = useMessage();
@@ -77,6 +78,74 @@ function toggleReveal(key) {
 function isRevealed(key) {
   return revealedKeys.value.has(key);
 }
+
+// --- fetch balance / usage ---
+const fetchingBalance = ref(false);
+const fetchingUsage = ref(false);
+
+const authHeaders = computed(() => {
+  const token = apiKeys.value[0];
+  return token ? { Authorization: `Bearer ${token}` } : {};
+});
+
+async function fetchBalanceData() {
+  if (!props.item?.balance_url) return;
+  fetchingBalance.value = true;
+  try {
+    const res = await fetch(props.item.balance_url, { headers: authHeaders.value });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const amount = props.item.balance_amount_path
+      ? resolveJsonPath(json, props.item.balance_amount_path)
+      : json;
+    const unit = props.item.balance_unit_path
+      ? resolveJsonPath(json, props.item.balance_unit_path)
+      : undefined;
+    // console.log(1, json, props.item.balance_amount_path, amount, unit);
+    const data = {
+      result: amount ?? null,
+      unit: unit ?? null,
+      fetched_at: new Date().toISOString(),
+    };
+    emit("update-item-data", { id: props.item.id, balance_data: data });
+    message.success(t("detail.fetchBalance") + " ✓");
+  } catch (e) {
+    message.error(t("detail.fetchError") + ": " + (e.message || String(e)));
+  } finally {
+    fetchingBalance.value = false;
+  }
+}
+
+async function fetchUsageData() {
+  if (!props.item?.usage_url) return;
+  fetchingUsage.value = true;
+  try {
+    const res = await fetch(props.item.usage_url, { headers: authHeaders.value });
+    console.log(3, res);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const value = props.item.usage_path
+      ? resolveJsonPath(json, props.item.usage_path)
+      : json;
+    const data = {
+      result: value ?? null,
+      fetched_at: new Date().toISOString(),
+    };
+    emit("update-item-data", { id: props.item.id, usage_data: data });
+    message.success(t("detail.fetchUsage") + " ✓");
+  } catch (e) {
+    message.error(t("detail.fetchError") + ": " + (e.message || String(e)));
+  } finally {
+    fetchingUsage.value = false;
+  }
+}
+
+function formatFetchedAt(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 </script>
 
 <template>
@@ -102,12 +171,65 @@ function isRevealed(key) {
           <div v-if="models.length" class="header-models">
             <span v-for="(m, i) in models" :key="i" class="chip">{{ m }}</span>
           </div>
-          
+
         </div>
       </div>
 
       <section v-if="item.description" class="field">
         <p class="description">{{ item.description }}</p>
+      </section>
+
+      <!-- Fetch data section -->
+      <section v-if="item.balance_url || item.usage_url" class="field">
+        <label>{{ $t('detail.balanceData') }}</label>
+        <div class="data-display-grid">
+          <!-- Balance card -->
+          <div v-if="item.balance_url" class="data-card">
+            <div class="data-card-label">{{ $t('detail.fetchBalance') }}</div>
+            <div v-if="item.balance_data?.result != null" class="data-card-value">
+              {{ item.balance_data.result }}{{ item.balance_data.unit ? ' ' + item.balance_data.unit : '' }}
+            </div>
+            <div v-else class="data-card-value data-card-empty">--</div>
+            <div v-if="item.balance_data?.fetched_at" class="data-card-time">
+              {{ formatFetchedAt(item.balance_data.fetched_at) }}
+            </div>
+            <n-button
+              class="data-card-fetch-btn"
+              text
+              size="tiny"
+              :loading="fetchingBalance"
+              @click="fetchBalanceData"
+            >
+              <template #icon>
+                <RefreshCw :size="12" />
+              </template>
+              {{ $t('detail.fetchBalance') }}
+            </n-button>
+          </div>
+          <!-- Usage card -->
+          <div v-if="item.usage_url" class="data-card">
+            <div class="data-card-label">{{ $t('detail.fetchUsage') }}</div>
+            <div v-if="item.usage_data?.result != null" class="data-card-value">
+              {{ typeof item.usage_data.result === 'object' ? JSON.stringify(item.usage_data.result) : item.usage_data.result }}
+            </div>
+            <div v-else class="data-card-value data-card-empty">--</div>
+            <div v-if="item.usage_data?.fetched_at" class="data-card-time">
+              {{ formatFetchedAt(item.usage_data.fetched_at) }}
+            </div>
+            <n-button
+              class="data-card-fetch-btn"
+              text
+              size="tiny"
+              :loading="fetchingUsage"
+              @click="fetchUsageData"
+            >
+              <template #icon>
+                <RefreshCw :size="12" />
+              </template>
+              {{ $t('detail.fetchUsage') }}
+            </n-button>
+          </div>
+        </div>
       </section>
 
       <!-- Website -->
@@ -270,18 +392,20 @@ function isRevealed(key) {
   margin: 0 auto;
 }
 
-/* ---- Sticky header ---- */
+.detail-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.detail-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.14);
+}
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
   display: flex;
   align-items: flex-start;
   gap: 16px;
   padding: 4px 0 16px;
   margin-bottom: 16px;
-  /* background: var(--window-bg); */
-  /* border-bottom: 1px solid var(--divider); */
 }
 
 .header-icon {
@@ -354,6 +478,52 @@ function isRevealed(key) {
   margin-top: 10px;
 }
 
+/* ---- Fetch button inside data cards ---- */
+.data-card-fetch-btn {
+  margin-top: 8px;
+}
+
+.data-card-empty {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* ---- Data display cards ---- */
+.data-display-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.data-card {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--divider);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.data-card-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+
+.data-card-value {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.data-card-time {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
 .badges {
   display: flex;
   gap: 6px;
@@ -398,6 +568,7 @@ function isRevealed(key) {
   border-left: 2px solid rgba(0, 0, 0, 0.12);
   color: var(--text-secondary);
 }
+
 /* ---- Fields ---- */
 .field {
   margin-bottom: 12px;
@@ -572,5 +743,9 @@ html[data-theme="dark"] .badge-inactive {
 }
 html[data-theme="dark"] .header-icon {
   background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .data-card {
+  background: rgba(255, 255, 255, 0.03);
 }
 </style>

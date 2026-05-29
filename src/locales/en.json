@@ -62,7 +62,14 @@
     "reveal": "Reveal",
     "copySuccess": "Copied to clipboard",
     "statusActive": "Active",
-    "statusInactive": "Inactive"
+    "statusInactive": "Inactive",
+    "fetchBalance": "Fetch Balance",
+    "fetchUsage": "Fetch Usage",
+    "balanceData": "Balance Data",
+    "usageData": "Usage Data",
+    "fetchError": "Fetch failed",
+    "fetching": "Fetching…",
+    "noData": "No data"
   },
   "editor": {
     "kicker": "Data Management",

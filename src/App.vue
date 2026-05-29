@@ -44,7 +44,11 @@ const sidebarCollapsed = ref(false);
 
 // --- 选择 & 导航 ---
 const selectedItemId = ref(null);
-const selectedItem = computed(() => findNode(selectedItemId.value));
+const dataVersion = ref(0);
+const selectedItem = computed(() => {
+  void dataVersion.value;
+  return findNode(selectedItemId.value);
+});
 
 const flatItems = computed(() => {
   const items = [];
@@ -258,6 +262,15 @@ function revealValue(value) {
 
 function handleSelect(id) { selectedItemId.value = id; }
 
+function handleUpdateItemData({ id, balance_data, usage_data }) {
+  const node = findNode(id);
+  if (!node) return;
+  if (balance_data !== undefined) node.balance_data = balance_data;
+  if (usage_data !== undefined) node.usage_data = usage_data;
+  dataVersion.value++;
+  saveConfig();
+}
+
 function handleDetailAddItem() { openCreateItem(selectedItemId.value); }
 function handleDetailEditItem() { if (selectedItemId.value) openEditNode(selectedItemId.value); }
 function handleDetailDeleteItem() { requestDelete(selectedItemId.value); }
@@ -323,6 +336,7 @@ onMounted(async () => {
             @delete-item="handleDetailDeleteItem"
             @copy-field="copyValue"
             @reveal-field="revealValue"
+            @update-item-data="handleUpdateItemData"
             @prev-item="navigateToPrev"
             @next-item="navigateToNext"
           />
