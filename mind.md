@@ -7,3 +7,7 @@
 仪表盘：
 用量分析：
 
+https://freemodel.dev/vite.svg
+https://freemodel.dev/api/usage
+
+

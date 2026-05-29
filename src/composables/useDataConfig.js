@@ -370,7 +370,9 @@ export function useDataConfig() {
       api_urls: parseListField(form.api_urls),
       models: parseListField(form.models),
       switch: form.switch !== false,
-      icon: resolveProviderIcon(form.provider, form.website),
+      icon: (form.icon && (form.icon.startsWith("http://") || form.icon.startsWith("https://") || form.icon.startsWith("data:")))
+        ? form.icon.trim()
+        : resolveProviderIcon(form.provider, form.website),
       // 高级配置
       balance_url: String(form.balance_url || "").trim(),
       balance_amount_path: String(form.balance_amount_path || "").trim(),
