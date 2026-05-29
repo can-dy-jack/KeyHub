@@ -33,6 +33,7 @@ export function createEmptyNodeForm(kind = "subGroup") {
     balance_unit_path: "",
     usage_url: "",
     usage_path: "",
+    usage_week_path: "",
   };
 }
 

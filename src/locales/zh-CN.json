@@ -69,7 +69,9 @@
     "usageData": "用量数据",
     "fetchError": "获取失败",
     "fetching": "获取中…",
-    "noData": "暂无数据"
+    "noData": "暂无数据",
+    "usage5hUsage": "5h 使用量",
+    "usage1wUsage": "1周 使用量"
   },
   "editor": {
     "kicker": "数据管理",
@@ -104,8 +106,10 @@
     "balanceUnitPathPlaceholder": "data.unit",
     "usageUrl": "用量查询接口",
     "usageUrlPlaceholder": "https://api.example.com/v1/usage",
-    "usagePath": "用量数据路径",
-    "usagePathPlaceholder": "data.usage",
+    "usagePath": "用量数据路径（5h使用量）",
+    "usagePathPlaceholder": "data.usage_5h",
+    "usageWeekPath": "用量数据路径（1周使用量）",
+    "usageWeekPathPlaceholder": "data.usage_week",
     "pathNote": "JSON 路径，支持点号分隔，如 data.total_balance"
   },
   "config": {

@@ -30,7 +30,7 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
 const hasAdvancedConfig = computed(() => {
   const item = props.item;
   if (!item) return false;
-  return !!(item.balance_url || item.balance_amount_path || item.balance_unit_path || item.usage_url || item.usage_path);
+  return !!(item.balance_url || item.balance_amount_path || item.balance_unit_path || item.usage_url || item.usage_path || item.usage_week_path);
 });
 
 // --- copy with feedback ---
@@ -101,7 +101,6 @@ async function fetchBalanceData() {
     const unit = props.item.balance_unit_path
       ? resolveJsonPath(json, props.item.balance_unit_path)
       : undefined;
-    // console.log(1, json, props.item.balance_amount_path, amount, unit);
     const data = {
       result: amount ?? null,
       unit: unit ?? null,
@@ -121,14 +120,17 @@ async function fetchUsageData() {
   fetchingUsage.value = true;
   try {
     const res = await fetch(props.item.usage_url, { headers: authHeaders.value });
-    console.log(3, res);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
-    const value = props.item.usage_path
+    const hourResult = props.item.usage_path
       ? resolveJsonPath(json, props.item.usage_path)
       : json;
+    const weekResult = props.item.usage_week_path
+      ? resolveJsonPath(json, props.item.usage_week_path)
+      : undefined;
     const data = {
-      result: value ?? null,
+      hour_result: hourResult ?? null,
+      week_result: weekResult ?? null,
       fetched_at: new Date().toISOString(),
     };
     emit("update-item-data", { id: props.item.id, usage_data: data });
@@ -145,6 +147,11 @@ function formatFetchedAt(iso) {
   const d = new Date(iso);
   const pad = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function formatUsageValue(val) {
+  if (val == null) return null;
+  return typeof val === "object" ? JSON.stringify(val) : String(val);
 }
 </script>
 
@@ -209,10 +216,22 @@ function formatFetchedAt(iso) {
           <!-- Usage card -->
           <div v-if="item.usage_url" class="data-card">
             <div class="data-card-label">{{ $t('detail.fetchUsage') }}</div>
-            <div v-if="item.usage_data?.result != null" class="data-card-value">
-              {{ typeof item.usage_data.result === 'object' ? JSON.stringify(item.usage_data.result) : item.usage_data.result }}
+            <div class="usage-values">
+              <div class="usage-row">
+                <span class="usage-sub-label">{{ $t('detail.usage5hUsage') }}</span>
+                <span v-if="item.usage_data?.hour_result != null" class="data-card-value">
+                  {{ formatUsageValue(item.usage_data.hour_result) }}
+                </span>
+                <span v-else class="data-card-value data-card-empty">--</span>
+              </div>
+              <div class="usage-row">
+                <span class="usage-sub-label">{{ $t('detail.usage1wUsage') }}</span>
+                <span v-if="item.usage_data?.week_result != null" class="data-card-value">
+                  {{ formatUsageValue(item.usage_data.week_result) }}
+                </span>
+                <span v-else class="data-card-value data-card-empty">--</span>
+              </div>
             </div>
-            <div v-else class="data-card-value data-card-empty">--</div>
             <div v-if="item.usage_data?.fetched_at" class="data-card-time">
               {{ formatFetchedAt(item.usage_data.fetched_at) }}
             </div>
@@ -305,7 +324,7 @@ function formatFetchedAt(iso) {
                   </label>
                 </template>
               </div>
-              <div v-if="item.usage_url || item.usage_path" class="advanced-group">
+              <div v-if="item.usage_url || item.usage_path || item.usage_week_path" class="advanced-group">
                 <template v-if="item.usage_url">
                   <label class="detail-field">
                     <span class="detail-field-label">{{ $t('editor.usageUrl') }}</span>
@@ -316,6 +335,12 @@ function formatFetchedAt(iso) {
                   <label class="detail-field">
                     <span class="detail-field-label">{{ $t('editor.usagePath') }}</span>
                     <span class="value mono">{{ item.usage_path }}</span>
+                  </label>
+                </template>
+                <template v-if="item.usage_week_path">
+                  <label class="detail-field">
+                    <span class="detail-field-label">{{ $t('editor.usageWeekPath') }}</span>
+                    <span class="value mono">{{ item.usage_week_path }}</span>
                   </label>
                 </template>
               </div>
@@ -486,6 +511,27 @@ function formatFetchedAt(iso) {
 .data-card-empty {
   color: var(--text-tertiary);
   font-weight: 400;
+}
+
+/* ---- Usage sub-labels ---- */
+.usage-values {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.usage-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.usage-sub-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  min-width: 36px;
 }
 
 /* ---- Data display cards ---- */

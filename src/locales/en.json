@@ -69,7 +69,9 @@
     "usageData": "Usage Data",
     "fetchError": "Fetch failed",
     "fetching": "Fetching…",
-    "noData": "No data"
+    "noData": "No data",
+    "usage5hUsage": "5h Usage",
+    "usage1wUsage": "1w Usage"
   },
   "editor": {
     "kicker": "Data Management",
@@ -104,8 +106,10 @@
     "balanceUnitPathPlaceholder": "data.unit",
     "usageUrl": "Usage API",
     "usageUrlPlaceholder": "https://api.example.com/v1/usage",
-    "usagePath": "Usage Data Path",
-    "usagePathPlaceholder": "data.usage",
+    "usagePath": "Usage Data Path (5h Usage)",
+    "usagePathPlaceholder": "data.usage_5h",
+    "usageWeekPath": "Usage Data Path (1w Usage)",
+    "usageWeekPathPlaceholder": "data.usage_week",
     "pathNote": "JSON path, dot-separated, e.g. data.total_balance"
   },
   "config": {

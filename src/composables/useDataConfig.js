@@ -132,6 +132,7 @@ function normalizeNode(node) {
       balance_unit_path: node.balance_unit_path || "",
       usage_url: node.usage_url || "",
       usage_path: node.usage_path || "",
+      usage_week_path: node.usage_week_path || "",
       balance_data: node.balance_data ?? null,
       usage_data: node.usage_data ?? null,
     };
@@ -376,6 +377,7 @@ export function useDataConfig() {
       balance_unit_path: String(form.balance_unit_path || "").trim(),
       usage_url: String(form.usage_url || "").trim(),
       usage_path: String(form.usage_path || "").trim(),
+      usage_week_path: String(form.usage_week_path || "").trim(),
       // 保留已获取的数据
       balance_data: existingNode?.balance_data ?? null,
       usage_data: existingNode?.usage_data ?? null,
@@ -388,6 +390,7 @@ export function useDataConfig() {
     if (!nextNode.balance_unit_path) delete nextNode.balance_unit_path;
     if (!nextNode.usage_url) delete nextNode.usage_url;
     if (!nextNode.usage_path) delete nextNode.usage_path;
+    if (!nextNode.usage_week_path) delete nextNode.usage_week_path;
     if (!nextNode.balance_data) delete nextNode.balance_data;
     if (!nextNode.usage_data) delete nextNode.usage_data;
 

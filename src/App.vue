@@ -107,7 +107,7 @@ function closeNodeEditor() {
 }
 
 function handleNodeEditorSave(formData) {
-  const existingNode = nodeEditorTargetId.value ? findNode(nodeEditorTargetId.value) : null;
+  const existingNode = nodeEditorMode.value === "edit" && nodeEditorTargetId.value ? findNode(nodeEditorTargetId.value) : null;
   const nextNode = buildNodeFromForm(formData, existingNode);
   const targetGroupId = formData.targetGroupId || null;
 
@@ -156,7 +156,7 @@ function openCreateChildItem(parentGroupId) {
 
 function openCreateItem(targetId = selectedItemId.value) {
   const parentId = targetId ? getParentGroupId(targetId) : null;
-  openNodeEditor({ mode: "create", kind: "item", title: t("actions.addItem"), targetId, parentId });
+  openNodeEditor({ mode: "create", kind: "item", title: t("actions.addItem"), parentId });
 }
 
 function openEditNode(nodeId) {

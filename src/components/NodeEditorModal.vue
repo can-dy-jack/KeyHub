@@ -69,6 +69,7 @@ function populateForm() {
       form.balance_unit_path = props.node.balance_unit_path ?? "";
       form.usage_url = props.node.usage_url ?? "";
       form.usage_path = props.node.usage_path ?? "";
+      form.usage_week_path = props.node.usage_week_path ?? "";
     }
   } else if (props.parentId) {
     // 创建模式：预填父分组
@@ -257,6 +258,11 @@ function onSubmit() {
                     <label class="form-field full-width">
                       <span>{{ $t('editor.usagePath') }}</span>
                       <n-input v-model:value="form.usage_path" :placeholder="$t('editor.usagePathPlaceholder')" />
+                    </label>
+
+                    <label class="form-field full-width">
+                      <span>{{ $t('editor.usageWeekPath') }}</span>
+                      <n-input v-model:value="form.usage_week_path" :placeholder="$t('editor.usageWeekPathPlaceholder')" />
                     </label>
                   </div>
                   </div>
