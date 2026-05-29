@@ -28,18 +28,18 @@ function onSave() {
     <div class="modal-card modal-card-wide">
       <header class="modal-header">
         <div>
-          <div class="modal-kicker">配置文件</div>
-          <h2>settings.json</h2>
+          <div class="modal-kicker">{{ $t('config.kicker') }}</div>
+          <h2>{{ $t('config.title') }}</h2>
           <p>{{ settingsPath }}</p>
         </div>
         <div class="config-actions no-drag">
-          <n-button secondary size="small" @click="$emit('import-file')">导入</n-button>
-          <n-button secondary size="small" @click="$emit('refresh')">刷新</n-button>
+          <n-button secondary size="small" @click="$emit('import-file')">{{ $t('config.import') }}</n-button>
+          <n-button secondary size="small" @click="$emit('refresh')">{{ $t('config.refresh') }}</n-button>
         </div>
       </header>
 
       <div class="config-note">
-        直接编辑 JSON 前请留意解析问题。格式错误时不会写入 settings.json。
+        {{ $t('config.note') }}
       </div>
 
       <textarea
@@ -53,8 +53,8 @@ function onSave() {
       <div v-else class="status-note">{{ statusMessage }}</div>
 
       <div class="modal-footer">
-        <n-button secondary size="small" @click="$emit('close')">取消</n-button>
-        <n-button type="primary" size="small" @click="onSave">保存到配置文件</n-button>
+        <n-button secondary size="small" @click="$emit('close')">{{ $t('config.cancel') }}</n-button>
+        <n-button type="primary" size="small" @click="onSave">{{ $t('config.save') }}</n-button>
       </div>
     </div>
   </div>

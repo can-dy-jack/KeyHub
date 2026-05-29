@@ -1,5 +1,6 @@
 <script setup>
 import { computed, reactive, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { NButton, NInput, NSwitch, NTreeSelect } from "naive-ui";
 import { useDataConfig } from "../composables/useDataConfig.js";
 import { buildTreeOptions, createEmptyNodeForm, fieldToArray } from "../utils/helpers.js";
@@ -17,6 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "save"]);
 
+const { t } = useI18n();
 const { findNode, getParentGroupId } = useDataConfig();
 
 const form = reactive(createEmptyNodeForm());
@@ -76,30 +78,30 @@ function onSubmit() {
     <div class="editor-scroll">
       <div class="editor-header">
         <div>
-          <div class="modal-kicker">数据管理</div>
+          <div class="modal-kicker">{{ $t('editor.kicker') }}</div>
           <h2>{{ title }}</h2>
-          <p v-if="mode === 'edit'">编辑后将直接写入 {{ settingsPath }}</p>
+          <p v-if="mode === 'edit'">{{ t('editor.willWriteTo', { path: settingsPath }) }}</p>
         </div>
       </div>
 
       <form class="editor-form" @submit.prevent="onSubmit">
         <div class="form-grid">
           <label class="form-field">
-            <span>名称</span>
+            <span>{{ $t('editor.name') }}</span>
             <n-input v-model:value="form.name" required />
           </label>
 
           <label v-if="form.kind === 'subGroup'" class="form-field">
-            <span>图标</span>
-            <n-input v-model:value="form.icon" placeholder="可选 emoji 或符号" />
+            <span>{{ $t('editor.icon') }}</span>
+            <n-input v-model:value="form.icon" :placeholder="$t('editor.iconPlaceholder')" />
           </label>
 
           <label class="form-field full-width">
-            <span>目标分组</span>
+            <span>{{ $t('editor.targetGroup') }}</span>
             <n-tree-select
               v-model:value="form.targetGroupId"
               :options="treeSelectOptions"
-              placeholder="根目录"
+              :placeholder="$t('editor.rootPlaceholder')"
               clearable
               :default-expand-all="true"
             />
@@ -107,24 +109,24 @@ function onSubmit() {
 
           <template v-if="form.kind === 'item'">
             <label class="form-field full-width">
-              <span>Provider</span>
+              <span>{{ $t('editor.provider') }}</span>
               <n-input v-model:value="form.provider" required />
             </label>
 
             <label class="form-field full-width">
-              <span>Website (可选)</span>
-              <n-input v-model:value="form.website" placeholder="https://example.com" />
+              <span>{{ $t('editor.websiteOptional') }}</span>
+              <n-input v-model:value="form.website" :placeholder="$t('editor.websitePlaceholder')" />
             </label>
 
             <label class="form-field full-width">
-              <span>Description</span>
-              <n-input v-model:value="form.description" type="textarea" rows="3" placeholder="条目说明" />
+              <span>{{ $t('editor.description') }}</span>
+              <n-input v-model:value="form.description" type="textarea" rows="3" :placeholder="$t('editor.descriptionPlaceholder')" />
             </label>
 
             <label class="form-field full-width">
-              <span>API Keys</span>
+              <span>{{ $t('editor.apiKeys') }}</span>
               <div v-for="(_, idx) in form.api_keys" :key="idx" class="multi-input-row">
-                <n-input v-model:value="form.api_keys[idx]" placeholder="请输入 key" />
+                <n-input v-model:value="form.api_keys[idx]" :placeholder="$t('editor.apiKeyPlaceholder')" />
                 <n-button
                   v-if="form.api_keys.length > 1"
                   text
@@ -133,13 +135,13 @@ function onSubmit() {
                   @click="form.api_keys.splice(idx, 1)"
                 >✕</n-button>
               </div>
-              <n-button dashed size="tiny" @click="form.api_keys.push('')">+ 添加</n-button>
+              <n-button dashed size="tiny" @click="form.api_keys.push('')">{{ $t('editor.addField') }}</n-button>
             </label>
 
             <label class="form-field full-width">
-              <span>API URLs</span>
+              <span>{{ $t('editor.apiUrls') }}</span>
               <div v-for="(_, idx) in form.api_urls" :key="idx" class="multi-input-row">
-                <n-input v-model:value="form.api_urls[idx]" placeholder="请输入 url" />
+                <n-input v-model:value="form.api_urls[idx]" :placeholder="$t('editor.apiUrlPlaceholder')" />
                 <n-button
                   v-if="form.api_urls.length > 1"
                   text
@@ -148,13 +150,13 @@ function onSubmit() {
                   @click="form.api_urls.splice(idx, 1)"
                 >✕</n-button>
               </div>
-              <n-button dashed size="tiny" @click="form.api_urls.push('')">+ 添加</n-button>
+              <n-button dashed size="tiny" @click="form.api_urls.push('')">{{ $t('editor.addField') }}</n-button>
             </label>
 
             <label class="form-field full-width">
-              <span>Models</span>
+              <span>{{ $t('editor.models') }}</span>
               <div v-for="(_, idx) in form.models" :key="idx" class="multi-input-row">
-                <n-input v-model:value="form.models[idx]" placeholder="请输入 model" />
+                <n-input v-model:value="form.models[idx]" :placeholder="$t('editor.modelPlaceholder')" />
                 <n-button
                   v-if="form.models.length > 1"
                   text
@@ -163,11 +165,11 @@ function onSubmit() {
                   @click="form.models.splice(idx, 1)"
                 >✕</n-button>
               </div>
-              <n-button dashed size="tiny" @click="form.models.push('')">+ 添加</n-button>
+              <n-button dashed size="tiny" @click="form.models.push('')">{{ $t('editor.addField') }}</n-button>
             </label>
 
             <label class="form-field">
-              <span>Active</span>
+              <span>{{ $t('editor.active') }}</span>
               <n-switch v-model:value="form.switch" />
             </label>
           </template>
@@ -175,8 +177,8 @@ function onSubmit() {
       </form>
     </div>
     <div class="editor-footer">
-      <n-button secondary size="small" @click="$emit('close')">取消</n-button>
-      <n-button type="primary" size="small" @click="onSubmit">保存</n-button>
+      <n-button secondary size="small" @click="$emit('close')">{{ $t('editor.cancel') }}</n-button>
+      <n-button type="primary" size="small" @click="onSubmit">{{ $t('editor.save') }}</n-button>
     </div>
   </div>
 </template>

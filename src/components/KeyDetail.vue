@@ -38,7 +38,7 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
         <div class="badges">
           <span class="badge" :class="`badge-${item.switch ? 'active' : 'inactive'}`">
             <span class="badge-dot" />
-            {{ item.switch ? 'active' : 'inactive' }}
+            {{ item.switch ? $t('detail.statusActive') : $t('detail.statusInactive') }}
           </span>
         </div>
       </div>
@@ -48,52 +48,52 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
       </section>
 
       <section v-if="item.website" class="field">
-        <label>Website</label>
+        <label>{{ $t('detail.website') }}</label>
         <div class="value mono row-line">
           <a class="link" :href="item.website" target="_blank" rel="noreferrer">{{ item.website }}</a>
           <n-button text size="tiny" @click="$emit('copy-field', item.website)">
             <template #icon>
               <CopyIcon :size="12" />
             </template>
-            Copy
+            {{ $t('detail.copy') }}
           </n-button>
         </div>
       </section>
 
       <section v-if="apiUrls.length" class="field">
-        <label>API URL{{ apiUrls.length > 1 ? "s" : "" }}</label>
+        <label>{{ apiUrls.length > 1 ? $t('detail.apiUrls') : $t('detail.apiUrl') }}</label>
         <div v-for="(u, i) in apiUrls" :key="i" class="value mono row-line">
           <span>{{ u }}</span>
           <n-button text size="tiny" @click="$emit('copy-field', u)">
             <template #icon>
               <CopyIcon :size="12" />
             </template>
-            Copy
+            {{ $t('detail.copy') }}
           </n-button>
         </div>
       </section>
 
       <section v-if="apiKeys.length" class="field">
-        <label>API Key{{ apiKeys.length > 1 ? "s" : "" }}</label>
+        <label>{{ apiKeys.length > 1 ? $t('detail.apiKeys') : $t('detail.apiKey') }}</label>
         <div v-for="(k, i) in apiKeys" :key="i" class="value mono row-line">
           <span>{{ k }}</span>
           <n-button text size="tiny" @click="$emit('copy-field', k)">
             <template #icon>
               <CopyIcon :size="12" />
             </template>
-            Copy
+            {{ $t('detail.copy') }}
           </n-button>
           <n-button text size="tiny" @click="$emit('reveal-field', k)">
             <template #icon>
               <ViewIcon :size="12" />
             </template>
-            Reveal
+            {{ $t('detail.reveal') }}
           </n-button>
         </div>
       </section>
 
       <section v-if="models.length" class="field">
-        <label>Models</label>
+        <label>{{ $t('detail.models') }}</label>
         <div class="chips">
           <span v-for="(m, i) in models" :key="i" class="chip">{{ m }}</span>
         </div>
@@ -102,12 +102,12 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
 
     <div v-else class="empty">
       <div class="empty-mark">⌘</div>
-      <p>No Item Selected</p>
+      <p>{{ $t('detail.empty') }}</p>
       <n-button type="primary" size="small" @click="$emit('add-item')">
         <template #icon>
           <Plus :size="13" />
         </template>
-        Add Item
+        {{ $t('detail.addItem') }}
       </n-button>
     </div>
 
@@ -129,19 +129,19 @@ const avatar = computed(() => providerAvatar(props.item?.provider));
           <template #icon>
             <Plus :size="13" />
           </template>
-          Add Item
+          {{ $t('detail.addItem') }}
         </n-button>
         <n-button secondary size="small" @click="$emit('edit-item')">
           <template #icon>
             <Pencil :size="13" />
           </template>
-          Edit
+          {{ $t('detail.edit') }}
         </n-button>
         <n-button secondary size="small" type="error" @click="$emit('delete-item')">
           <template #icon>
             <Trash2 :size="13" />
           </template>
-          Delete
+          {{ $t('detail.delete') }}
         </n-button>
       </div>
     </div>

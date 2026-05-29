@@ -1,9 +1,11 @@
 <script setup>
 import { computed, h, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { NButton, NDropdown } from "naive-ui";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Monitor, Moon, Pin, Settings2, Sun } from "@lucide/vue";
+import { Globe, Monitor, Moon, Pin, Settings2, Sun } from "@lucide/vue";
 import { useWindowDrag } from "../composables/useWindowDrag.js";
+import { useLocale } from "../composables/useLocale.js";
 import SideButton from "./SideButton.vue";
 
 const props = defineProps({
@@ -15,6 +17,8 @@ const props = defineProps({
 
 const emit = defineEmits(["toggle", "open-config", "update-theme"]);
 
+const { t } = useI18n();
+const { locale, setLocale } = useLocale();
 const { startWindowDrag } = useWindowDrag();
 
 const alwaysOnTop = ref(false);
@@ -23,9 +27,9 @@ const isTogglingAlwaysOnTop = ref(false);
 const windowControlUnavailable = ref(false);
 
 const pinButtonTitle = computed(() => {
-  if (!isWindowStateReady.value) return "读取窗口状态中";
-  if (windowControlUnavailable.value) return "当前环境不支持窗口置顶";
-  return alwaysOnTop.value ? "取消窗口置顶" : "将窗口置顶";
+  if (!isWindowStateReady.value) return t("toolbar.pinReading");
+  if (windowControlUnavailable.value) return t("toolbar.pinUnavailable");
+  return alwaysOnTop.value ? t("toolbar.pinOn") : t("toolbar.pinOff");
 });
 
 async function syncAlwaysOnTopState() {
@@ -65,14 +69,55 @@ function renderIcon(icon) {
   return () => h(icon, { size: 14 });
 }
 
-const themeOptions = [
-  { label: "跟随系统", key: "system", icon: renderIcon(Monitor) },
-  { label: "浅色", key: "light", icon: renderIcon(Sun) },
-  { label: "深色", key: "dark", icon: renderIcon(Moon) },
-];
+function renderOptionLabel(label, isActive) {
+  return () =>
+    h(
+      "span",
+      {
+        style: {
+          fontWeight: isActive ? "600" : "400",
+          color: isActive ? "var(--primary-color, #f0b400)" : "inherit",
+        },
+      },
+      label,
+    );
+}
+
+const themeOptions = computed(() => [
+  {
+    label: renderOptionLabel(t("theme.system"), props.themeMode === "system"),
+    key: "system",
+    icon: renderIcon(Monitor),
+  },
+  {
+    label: renderOptionLabel(t("theme.light"), props.themeMode === "light"),
+    key: "light",
+    icon: renderIcon(Sun),
+  },
+  {
+    label: renderOptionLabel(t("theme.dark"), props.themeMode === "dark"),
+    key: "dark",
+    icon: renderIcon(Moon),
+  },
+]);
+
+const languageOptions = computed(() => [
+  {
+    label: renderOptionLabel(t("language.zhCN"), locale.value === "zh-CN"),
+    key: "zh-CN",
+  },
+  {
+    label: renderOptionLabel(t("language.en"), locale.value === "en"),
+    key: "en",
+  },
+]);
 
 function handleThemeSelect(key) {
   emit("update-theme", key);
+}
+
+function handleLanguageSelect(key) {
+  setLocale(key);
 }
 
 onMounted(() => {
@@ -92,12 +137,27 @@ onMounted(() => {
     </div>
 
     <div class="toolbar-right no-drag">
+      <!-- Language switcher -->
+      <n-dropdown trigger="click" :options="languageOptions" @select="handleLanguageSelect">
+        <n-button
+          quaternary
+          size="small"
+          :aria-label="t('language.label')"
+          :title="t('language.label')"
+        >
+          <template #icon>
+            <Globe :size="14" />
+          </template>
+        </n-button>
+      </n-dropdown>
+
+      <!-- Theme switcher -->
       <n-dropdown trigger="click" :options="themeOptions" @select="handleThemeSelect">
         <n-button
           quaternary
           size="small"
-          aria-label="主题设置"
-          title="主题设置"
+          :aria-label="t('theme.label')"
+          :title="t('theme.label')"
         >
           <template #icon>
             <Monitor :size="14" />
@@ -107,8 +167,8 @@ onMounted(() => {
       <n-button
         quaternary
         size="small"
-        aria-label="配置管理"
-        title="配置管理"
+        :aria-label="t('toolbar.config')"
+        :title="t('toolbar.config')"
         @click="$emit('open-config')"
       >
         <template #icon>

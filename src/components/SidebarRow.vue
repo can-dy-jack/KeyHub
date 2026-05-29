@@ -1,5 +1,6 @@
 <script setup>
 import { computed, h } from "vue";
+import { useI18n } from "vue-i18n";
 import { NDropdown } from "naive-ui";
 import { Folder, FolderOpen, FolderPlus, MoreHorizontal, Pencil, Plus, Trash2 } from "@lucide/vue";
 import { providerAvatar } from "../composables/useDataConfig.js";
@@ -12,6 +13,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["select", "toggle", "action"]);
+
+const { t } = useI18n();
 
 function statusDot(sw) {
   if (sw === true) return "ok";
@@ -26,18 +29,18 @@ function renderIcon(icon) {
   return () => h(icon, { size: 14 });
 }
 
-const groupActions = [
-  { label: "新增条目", key: "add-child-item", icon: renderIcon(Plus) },
-  { label: "新增子分组", key: "add-child-group", icon: renderIcon(FolderPlus) },
+const groupActions = computed(() => [
+  { label: t("actions.addItem"), key: "add-child-item", icon: renderIcon(Plus) },
+  { label: t("actions.addChildGroup"), key: "add-child-group", icon: renderIcon(FolderPlus) },
   { type: "divider", key: "d1" },
-  { label: "编辑", key: "edit", icon: renderIcon(Pencil) },
-  { label: "删除", key: "delete", icon: renderIcon(Trash2) },
-];
+  { label: t("actions.edit"), key: "edit", icon: renderIcon(Pencil) },
+  { label: t("actions.delete"), key: "delete", icon: renderIcon(Trash2) },
+]);
 
-const itemActions = [
-  { label: "编辑", key: "edit", icon: renderIcon(Pencil) },
-  { label: "删除", key: "delete", icon: renderIcon(Trash2) },
-];
+const itemActions = computed(() => [
+  { label: t("actions.edit"), key: "edit", icon: renderIcon(Pencil) },
+  { label: t("actions.delete"), key: "delete", icon: renderIcon(Trash2) },
+]);
 
 function handleDropdownSelect(key) {
   emit("action", { type: key, nodeId: props.node.id, node: props.node });
@@ -71,7 +74,7 @@ function onContextMenu(e) {
       <span class="count">{{ node.children?.length ?? 0 }}</span>
 
       <n-dropdown trigger="click" :options="groupActions" @select="handleDropdownSelect">
-        <button type="button" class="more-btn" title="更多操作" @click.stop>
+        <button type="button" class="more-btn" :title="$t('sidebar.moreActions')" @click.stop>
           <MoreHorizontal :size="14" />
         </button>
       </n-dropdown>
@@ -101,7 +104,7 @@ function onContextMenu(e) {
       @click="$emit('select', node.id)"
       @contextmenu="onContextMenu"
     >
-      <span class="chev placeholder" />
+      <!-- <span class="chev placeholder" /> -->
       <span class="provider-badge" :class="`badge-${node.switch ? 'active' : 'inactive'}`">
         <img v-if="node.icon" class="provider-icon" :src="node.icon" :alt="node.provider" />
         <span v-else class="provider-avatar" :style="{ background: avatar.color }">{{ avatar.letter }}</span>
@@ -113,7 +116,7 @@ function onContextMenu(e) {
       <span class="status-dot" :class="statusDot(node.switch)" />
 
       <n-dropdown trigger="click" :options="itemActions" @select="handleDropdownSelect">
-        <button type="button" class="more-btn" title="更多操作" @click.stop>
+        <button type="button" class="more-btn" :title="$t('sidebar.moreActions')" @click.stop>
           <MoreHorizontal :size="14" />
         </button>
       </n-dropdown>
@@ -133,7 +136,7 @@ function onContextMenu(e) {
   gap: 4px;
   padding: 0 6px;
   margin: 3px 8px;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
   user-select: none;
   color: var(--text-primary);
@@ -168,6 +171,7 @@ function onContextMenu(e) {
   display: grid;
   place-items: center;
   transition: transform 140ms ease;
+  gap: 5px;
 }
 
 .chev.placeholder {
@@ -186,6 +190,7 @@ function onContextMenu(e) {
   font-size: 12.5px;
   letter-spacing: 0.01em;
   color: var(--text-primary);
+  padding-left: 5px;
 }
 
 .count {

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { darkTheme, NConfigProvider } from "naive-ui";
 import AppSidebar from "./components/AppSidebar.vue";
 import AppTopBar from "./components/AppTopBar.vue";
@@ -9,9 +10,14 @@ import ConfigEditorModal from "./components/ConfigEditorModal.vue";
 import DeleteConfirmModal from "./components/DeleteConfirmModal.vue";
 import { useDataConfig } from "./composables/useDataConfig.js";
 import { useTheme } from "./composables/useTheme.js";
+import { useLocale } from "./composables/useLocale.js";
 
 // --- 主题 ---
 const { themeMode, isDark, themeOverrides, setThemeMode } = useTheme();
+
+// --- 国际化 ---
+const { t } = useI18n();
+const { setLocale, naiveLocale, naiveDateLocale } = useLocale();
 
 // --- 数据 ---
 const {
@@ -72,8 +78,8 @@ function navigateToNext() {
 // --- 顶部栏信息 ---
 const totalItems = computed(() => flatItems.value.length);
 const activeItems = computed(() => flatItems.value.filter((i) => i.switch).length);
-const shellTitle = computed(() => `${totalItems.value} 个密钥`);
-const shellSubtitle = computed(() => `${activeItems.value} 个可用`);
+const shellTitle = computed(() => t("app.keysCount", { count: totalItems.value }));
+const shellSubtitle = computed(() => t("app.availableCount", { count: activeItems.value }));
 
 // --- 节点编辑器 ---
 const nodeEditorOpen = ref(false);
@@ -133,20 +139,20 @@ function handleNodeEditorSave(formData) {
 }
 
 function openCreateRootGroup() {
-  openNodeEditor({ mode: "create", kind: "subGroup", title: "新增分组" });
+  openNodeEditor({ mode: "create", kind: "subGroup", title: t("actions.addGroup") });
 }
 
 function openCreateChildGroup(parentGroupId) {
-  openNodeEditor({ mode: "create", kind: "subGroup", title: "新增子分组", parentId: parentGroupId });
+  openNodeEditor({ mode: "create", kind: "subGroup", title: t("actions.addChildGroup"), parentId: parentGroupId });
 }
 
 function openCreateChildItem(parentGroupId) {
-  openNodeEditor({ mode: "create", kind: "item", title: "新增条目", parentId: parentGroupId });
+  openNodeEditor({ mode: "create", kind: "item", title: t("actions.addItem"), parentId: parentGroupId });
 }
 
 function openCreateItem(targetId = selectedItemId.value) {
   const parentId = targetId ? getParentGroupId(targetId) : null;
-  openNodeEditor({ mode: "create", kind: "item", title: "新增条目", targetId, parentId });
+  openNodeEditor({ mode: "create", kind: "item", title: t("actions.addItem"), targetId, parentId });
 }
 
 function openEditNode(nodeId) {
@@ -155,7 +161,7 @@ function openEditNode(nodeId) {
   openNodeEditor({
     mode: "edit",
     kind: node.type,
-    title: node.type === "subGroup" ? "编辑分组" : "编辑条目",
+    title: node.type === "subGroup" ? t("actions.editGroup") : t("actions.editItem"),
     targetId: node.id,
     parentId: getParentGroupId(node.id),
     node,
@@ -242,12 +248,12 @@ async function handleImportFile(event) {
 function copyValue(value) {
   const text = Array.isArray(value) ? value.join("\n") : String(value ?? "");
   navigator.clipboard?.writeText(text).catch(() => {
-    window.prompt("Copy value", text);
+    window.prompt(t("app.copyPrompt"), text);
   });
 }
 
 function revealValue(value) {
-  window.prompt("Value", Array.isArray(value) ? value.join("\n") : String(value ?? ""));
+  window.prompt(t("app.revealPrompt"), Array.isArray(value) ? value.join("\n") : String(value ?? ""));
 }
 
 function handleSelect(id) { selectedItemId.value = id; }
@@ -268,7 +274,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <n-config-provider :theme="isDark ? darkTheme : null" :theme-overrides="themeOverrides">
+  <n-config-provider :theme="isDark ? darkTheme : null" :theme-overrides="themeOverrides" :locale="naiveLocale" :date-locale="naiveDateLocale">
     <div class="app-shell">
       <AppSidebar
         :collapsed="sidebarCollapsed"

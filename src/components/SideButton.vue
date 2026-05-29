@@ -17,8 +17,8 @@ defineEmits(["toggle", "add-group"]);
       v-if="showAdd"
       quaternary
       size="small"
-      title="新增分组"
-      aria-label="新增分组"
+      :title="$t('sidebar.addGroup')"
+      :aria-label="$t('sidebar.addGroup')"
       @click="$emit('add-group')"
     >
       <template #icon>
@@ -28,8 +28,8 @@ defineEmits(["toggle", "add-group"]);
     <n-button
       quaternary
       size="small"
-      :title="collapsed ? 'Show Sidebar' : 'Hide Sidebar'"
-      :aria-label="collapsed ? 'Show Sidebar' : 'Hide Sidebar'"
+      :title="collapsed ? $t('sidebar.showSidebar') : $t('sidebar.hideSidebar')"
+      :aria-label="collapsed ? $t('sidebar.showSidebar') : $t('sidebar.hideSidebar')"
       @click="$emit('toggle')"
     >
       <template #icon>

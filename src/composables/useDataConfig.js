@@ -1,4 +1,5 @@
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { invoke } from "@tauri-apps/api/core";
 
 const PROVIDER_ICON_FILES = {
@@ -226,6 +227,8 @@ export function useDataConfig() {
   const lastError = ref("");
   const lastSaveMessage = ref("");
 
+  const { t } = useI18n();
+
   const groups = computed(() => config.value.groups);
 
   function setConfig(rawConfig) {
@@ -258,12 +261,12 @@ export function useDataConfig() {
       const text = await invoke("read_settings");
       setConfig(JSON.parse(text));
       lastError.value = "";
-      lastSaveMessage.value = "已从 settings.json 载入";
+      lastSaveMessage.value = t("status.loaded");
       return config.value;
     } catch (error) {
       setConfig({ groups: [] });
       lastError.value = error instanceof Error ? error.message : String(error);
-      lastSaveMessage.value = "配置文件不存在或无法解析，已载入示例数据";
+      lastSaveMessage.value = t("status.emptyConfig");
 
       await saveConfig();
       return config.value;
@@ -275,7 +278,7 @@ export function useDataConfig() {
   async function saveConfig() {
     const text = exportConfigText();
     await invoke("write_settings", { contents: text });
-    lastSaveMessage.value = `已保存到 ${settingsPath.value}`;
+    lastSaveMessage.value = t("status.saved", { path: settingsPath.value });
     return text;
   }
 

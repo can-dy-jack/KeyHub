@@ -1,0 +1,113 @@
+{
+  "app": {
+    "keysCount": "{count} Keys",
+    "availableCount": "{count} Available",
+    "copyPrompt": "Copy value",
+    "revealPrompt": "Value"
+  },
+  "sidebar": {
+    "addGroup": "Add Group",
+    "showSidebar": "Show Sidebar",
+    "hideSidebar": "Hide Sidebar",
+    "moreActions": "More Actions"
+  },
+  "actions": {
+    "addItem": "Add Item",
+    "addGroup": "Add Group",
+    "addChildGroup": "Add Subgroup",
+    "edit": "Edit",
+    "editGroup": "Edit Group",
+    "editItem": "Edit Item",
+    "delete": "Delete",
+    "confirmDelete": "Confirm Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add",
+    "import": "Import",
+    "refresh": "Refresh",
+    "copy": "Copy",
+    "reveal": "Reveal",
+    "saveToConfig": "Save to Config"
+  },
+  "theme": {
+    "label": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "label": "Language",
+    "zhCN": "简体中文",
+    "en": "English"
+  },
+  "toolbar": {
+    "config": "Config",
+    "pinReading": "Reading window state...",
+    "pinUnavailable": "Window pinning unavailable",
+    "pinOn": "Unpin window",
+    "pinOff": "Pin window on top"
+  },
+  "detail": {
+    "empty": "No Item Selected",
+    "addItem": "Add Item",
+    "edit": "Edit",
+    "delete": "Delete",
+    "website": "Website",
+    "apiUrl": "API URL",
+    "apiUrls": "API URLs",
+    "apiKey": "API Key",
+    "apiKeys": "API Keys",
+    "models": "Models",
+    "copy": "Copy",
+    "reveal": "Reveal",
+    "statusActive": "Active",
+    "statusInactive": "Inactive"
+  },
+  "editor": {
+    "kicker": "Data Management",
+    "willWriteTo": "Will write to {path} after editing",
+    "name": "Name",
+    "icon": "Icon",
+    "iconPlaceholder": "Optional emoji or symbol",
+    "targetGroup": "Target Group",
+    "rootPlaceholder": "Root",
+    "provider": "Provider",
+    "website": "Website",
+    "websiteOptional": "Website (optional)",
+    "websitePlaceholder": "https://example.com",
+    "description": "Description",
+    "descriptionPlaceholder": "Item description",
+    "apiKeys": "API Keys",
+    "apiKeyPlaceholder": "Enter key",
+    "apiUrls": "API URLs",
+    "apiUrlPlaceholder": "Enter URL",
+    "models": "Models",
+    "modelPlaceholder": "Enter model",
+    "active": "Active",
+    "addField": "+ Add",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "config": {
+    "kicker": "Config File",
+    "title": "settings.json",
+    "note": "Please validate JSON syntax before editing. Malformed JSON will not be written to settings.json.",
+    "import": "Import",
+    "refresh": "Refresh",
+    "cancel": "Cancel",
+    "save": "Save to Config"
+  },
+  "deleteConfirm": {
+    "kicker": "Confirm Delete",
+    "title": "Delete \"{name}\"?",
+    "groupWarning": "All subgroups and items within this group will be deleted.",
+    "itemWarning": "This action cannot be undone. Please confirm.",
+    "confirm": "Confirm Delete",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "loaded": "Loaded from settings.json",
+    "emptyConfig": "Config not found or invalid, loaded sample data",
+    "saved": "Saved to {path}"
+  }
+}

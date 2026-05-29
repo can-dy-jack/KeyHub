@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html>
   <head>
     <script>
       (function() {
+        // theme
         var theme = localStorage.getItem("keyhub-theme");
         var isDark;
         if (theme === "dark") {
@@ -13,12 +14,16 @@
           isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         }
         document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+
+        // locale
+        var locale = localStorage.getItem("keyhub-locale") || "zh-CN";
+        document.documentElement.setAttribute("lang", locale === "en" ? "en" : "zh-CN");
       })();
     </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri + Vue 3 App</title>
+    <title>KeyHub</title>
   </head>
 
   <body>
