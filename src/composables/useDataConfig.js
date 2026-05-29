@@ -157,6 +157,20 @@ function stringifyConfig(config) {
   return `${JSON.stringify(config, null, 2)}\n`;
 }
 
+// 获取到的余额/用量数据不再写入配置文件（改由 data.json 独立保存历史），
+// 这里在序列化前剔除这些运行时字段。
+function stripRuntimeData(nodes) {
+  return nodes
+    .map((node) => {
+      if (!node || typeof node !== "object") return node;
+      if (node.type === "subGroup") {
+        return { ...node, children: stripRuntimeData(node.children ?? []) };
+      }
+      const { balance_data, usage_data, ...rest } = node;
+      return rest;
+    });
+}
+
 function readLines(value) {
   return String(value ?? "")
     .split(/\r?\n/)
@@ -245,7 +259,7 @@ export function useDataConfig() {
   }
 
   function exportConfigText() {
-    return stringifyConfig(config.value);
+    return stringifyConfig({ ...config.value, groups: stripRuntimeData(config.value.groups) });
   }
 
   function exportNodeText(nodeId) {

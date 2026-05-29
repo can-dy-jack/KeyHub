@@ -22,6 +22,7 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "shadow": true,
+        "dragDropEnabled": false,
         "windowEffects": {
           "effects": ["popover", "sidebar"],
           "state": "active",

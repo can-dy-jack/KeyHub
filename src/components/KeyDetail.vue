@@ -412,7 +412,6 @@ function formatUsageValue(val) {
   min-height: 0;
   overflow: auto;
   padding: 20px 32px 16px;
-  max-width: 760px;
   width: 100%;
   margin: 0 auto;
 }

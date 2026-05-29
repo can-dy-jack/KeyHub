@@ -1,5 +1,9 @@
 <script setup>
-import { ref, onUnmounted, watch } from "vue";
+import { ref, onUnmounted, watch, computed, h } from "vue";
+import { useI18n } from "vue-i18n";
+import { NButton, NDropdown } from "naive-ui";
+import { ArrowUpDown, Check, ChevronDown, FolderPlus, Plus } from "@lucide/vue";
+import draggable from "vuedraggable";
 import SidebarRow from "./SidebarRow.vue";
 import SideButton from "./SideButton.vue";
 import { useWindowDrag } from "../composables/useWindowDrag.js";
@@ -10,9 +14,33 @@ const props = defineProps({
     selectedId: { type: String, default: null },
 });
 
-defineEmits(["select", "toggle", "add-group", "node-action"]);
+const emit = defineEmits(["select", "toggle", "add-group", "add-item", "node-action", "reorder"]);
+
+const { t } = useI18n();
 
 const expanded = ref({});
+
+// --- 排序模式：默认关闭，开启后才可拖拽 ---
+const sortMode = ref(false);
+
+function toggleSort() {
+    sortMode.value = !sortMode.value;
+}
+
+// --- 新增下拉：在根目录下新增组 / 新增项 ---
+function renderIcon(icon) {
+    return () => h(icon, { size: 14 });
+}
+
+const addOptions = computed(() => [
+    { label: t("actions.addGroup"), key: "group", icon: renderIcon(FolderPlus) },
+    { label: t("actions.addItem"), key: "item", icon: renderIcon(Plus) },
+]);
+
+function handleAddSelect(key) {
+    if (key === "group") emit("add-group");
+    else if (key === "item") emit("add-item");
+}
 
 // auto-expand first subGroup on load
 watch(() => props.groups, (groups) => {
@@ -71,8 +99,7 @@ onUnmounted(() => {
     <aside class="sidebar" :class="{ collapsed, resizing: isResizing }"
         :style="collapsed ? {} : { width: sidebarWidth + 'px', flexBasis: sidebarWidth + 'px' }">
         <div class="sidebar-header" data-tauri-drag-region @mousedown="startWindowDrag">
-            <SideButton :collapsed="collapsed" :show-add="true" @toggle="$emit('toggle')"
-                @add-group="$emit('add-group')" />
+            <SideButton :collapsed="collapsed" @toggle="$emit('toggle')" />
         </div>
         <div class="sidebar-info">
             <img class="app-logo" src="/app-icon.png" alt="KeyHub Logo" />
@@ -81,10 +108,40 @@ onUnmounted(() => {
                 <div class="app-version">v0.1.0</div>
             </div>
         </div>
+        <div v-if="!collapsed" class="sidebar-toolbar">
+            <n-dropdown trigger="click" :options="addOptions" @select="handleAddSelect">
+                <n-button quaternary size="small" :title="t('sidebar.add')" aria-label="Add"
+                    class="toolbar-btn">
+                    <template #icon>
+                        <Plus :size="15" />
+                    </template>
+                    {{ t("sidebar.add") }}
+                    <template #suffix>
+                        <ChevronDown :size="12" />
+                    </template>
+                </n-button>
+            </n-dropdown>
+            <n-button :quaternary="!sortMode" :type="sortMode ? 'primary' : 'default'" size="small"
+                :title="sortMode ? t('sidebar.sortDone') : t('sidebar.sortMode')"
+                :aria-label="sortMode ? t('sidebar.sortDone') : t('sidebar.sortMode')" @click="toggleSort"
+                class="toolbar-btn">
+                <template #icon>
+                    <Check v-if="sortMode" :size="15" />
+                    <ArrowUpDown v-else :size="15" />
+                </template>
+                {{ sortMode ? t('sidebar.sortDone') : t('sidebar.sortMode') }}
+            </n-button>
+        </div>
         <div class="sidebar-content">
-            <SidebarRow v-for="node in groups" :key="node.id" :node="node" :selected-id="selectedId"
-                :expanded="expanded" @select="(id) => $emit('select', id)" @toggle="toggleExpand"
-                @action="(payload) => $emit('node-action', payload)" />
+            <draggable :list="groups" group="sidebar-nodes" item-key="id" class="drag-list" :animation="180"
+                :disabled="!sortMode" handle=".drag-handle" ghost-class="drag-ghost" chosen-class="drag-chosen"
+                drag-class="drag-active" @change="$emit('reorder')">
+                <template #item="{ element }">
+                    <SidebarRow :node="element" :selected-id="selectedId" :expanded="expanded" :sort-mode="sortMode"
+                        @select="(id) => $emit('select', id)" @toggle="toggleExpand"
+                        @action="(payload) => $emit('node-action', payload)" @reorder="$emit('reorder')" />
+                </template>
+            </draggable>
         </div>
         <div v-if="!collapsed" class="resize-handle" @mousedown="startResize">
             <div class="resize-handle-line" />
@@ -166,16 +223,39 @@ onUnmounted(() => {
     padding: 6px 0 10px;
 }
 
+.drag-list {
+    min-height: 100%;
+}
+
 .sidebar-info {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 0 12px 8px;
+    margin: 0 12px 6px;
     padding: 10px 14px;
     min-height: 50px;
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.28);
     border: 1px solid var(--divider);
+}
+
+.sidebar-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 8px 6px;
+    padding: 4px 6px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--divider);
+}
+
+.toolbar-btn {
+    flex: 1;
+    justify-content: flex-start;
+    font-size: 12.5px;
+    padding: 0 8px;
+    height: 28px;
 }
 
 .app-logo {
@@ -208,5 +288,37 @@ onUnmounted(() => {
 <style>
 html[data-theme="dark"] .sidebar-info {
     background: rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .sidebar-toolbar {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* --- 拖拽中的占位/选中样式（作用于子组件根元素，故非 scoped） --- */
+
+/* 落点占位：高亮空槽，清晰指示将要插入的位置 */
+.drag-ghost {
+    opacity: 1 !important;
+}
+
+.drag-ghost > .row {
+    background: var(--accent-soft) !important;
+    border: 1px dashed var(--accent);
+    border-radius: 6px;
+    min-height: 38px;
+}
+
+/* 占位槽内不显示原内容，只保留高亮区域 */
+.drag-ghost > .row > * {
+    visibility: hidden;
+}
+
+/* 正在被拖拽（跟随光标）的元素 */
+.drag-active > .row {
+    opacity: 0.9;
+}
+
+.drag-chosen .row {
+    cursor: grabbing;
 }
 </style>

@@ -26,6 +26,9 @@ importers:
       vue-i18n:
         specifier: ^11.4.4
         version: 11.4.4(vue@3.5.35)
+      vuedraggable:
+        specifier: ^4.1.0
+        version: 4.1.0(vue@3.5.35)
     devDependencies:
       '@tauri-apps/cli':
         specifier: ^2
@@ -612,6 +615,9 @@ packages:
   seemly@0.3.10:
     resolution: {integrity: sha512-2+SMxtG1PcsL0uyhkumlOU6Qo9TAQ/WyH7tthnPIOQB05/12jz9naq6GZ6iZ6ApVsO3rr2gsnTf3++OV63kE1Q==}
 
+  sortablejs@1.14.0:
+    resolution: {integrity: sha512-pBXvQCs5/33fdN1/39pPL0NZF20LeRbLQ5jtnheIPN9JQAaufGjKdWduZn4U7wCtVuzKhmRkI0DFYHYRbB2H1w==}
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -686,6 +692,11 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  vuedraggable@4.1.0:
+    resolution: {integrity: sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==}
+    peerDependencies:
+      vue: ^3.0.1
 
   vueuc@0.4.65:
     resolution: {integrity: sha512-lXuMl+8gsBmruudfxnMF9HW4be8rFziylXFu1VHVNbLVhRTXXV4njvpRuJapD/8q+oFEMSfQMH16E/85VoWRyQ==}
@@ -1154,6 +1165,8 @@ snapshots:
 
   seemly@0.3.10: {}
 
+  sortablejs@1.14.0: {}
+
   source-map-js@1.2.1: {}
 
   tinyglobby@0.2.16:
@@ -1199,6 +1212,11 @@ snapshots:
       '@vue/runtime-dom': 3.5.35
       '@vue/server-renderer': 3.5.35(vue@3.5.35)
       '@vue/shared': 3.5.35
+
+  vuedraggable@4.1.0(vue@3.5.35):
+    dependencies:
+      sortablejs: 1.14.0
+      vue: 3.5.35
 
   vueuc@0.4.65(vue@3.5.35):
     dependencies:

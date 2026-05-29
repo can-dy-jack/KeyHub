@@ -293,7 +293,6 @@ function onSubmit() {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  max-width: 760px;
   width: 100%;
   margin: 0 auto;
   padding: 24px 32px 16px;

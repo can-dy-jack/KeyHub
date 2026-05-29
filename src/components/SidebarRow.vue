@@ -2,7 +2,8 @@
 import { computed, h } from "vue";
 import { useI18n } from "vue-i18n";
 import { NDropdown } from "naive-ui";
-import { Folder, FolderOpen, FolderPlus, MoreHorizontal, Pencil, Plus, Trash2 } from "@lucide/vue";
+import draggable from "vuedraggable";
+import { Folder, FolderOpen, FolderPlus, GripVertical, MoreHorizontal, Pencil, Plus, Trash2 } from "@lucide/vue";
 import { providerAvatar } from "../composables/useDataConfig.js";
 
 const props = defineProps({
@@ -10,9 +11,10 @@ const props = defineProps({
   selectedId: { type: String, default: null },
   expanded: { type: Object, required: true },
   depth: { type: Number, default: 0 },
+  sortMode: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["select", "toggle", "action"]);
+const emit = defineEmits(["select", "toggle", "action", "reorder"]);
 
 const { t } = useI18n();
 
@@ -65,6 +67,9 @@ function onContextMenu(e) {
       @click="$emit('toggle', node.id)"
       @contextmenu="onContextMenu"
     >
+      <span v-if="sortMode" class="drag-handle" :title="$t('sidebar.sortMode')" @click.stop>
+        <GripVertical :size="14" />
+      </span>
       <span class="chev">
         <FolderOpen v-if="expanded[node.id]" :size="16" />
         <Folder v-else :size="16" />
@@ -81,19 +86,34 @@ function onContextMenu(e) {
     </div>
 
     <!-- Children -->
-    <div v-if="node.type === 'subGroup' && expanded[node.id]" class="children">
-      <SidebarRow
-        v-for="c in node.children"
-        :key="c.id"
-        :node="c"
-        :selected-id="selectedId"
-        :expanded="expanded"
-        :depth="depth + 1"
-        @select="(id) => $emit('select', id)"
-        @toggle="(id) => $emit('toggle', id)"
-        @action="(payload) => $emit('action', payload)"
-      />
-    </div>
+    <draggable
+      v-if="node.type === 'subGroup' && expanded[node.id]"
+      :list="node.children"
+      group="sidebar-nodes"
+      item-key="id"
+      class="children"
+      :animation="180"
+      :disabled="!sortMode"
+      handle=".drag-handle"
+      ghost-class="drag-ghost"
+      chosen-class="drag-chosen"
+      drag-class="drag-active"
+      @change="$emit('reorder')"
+    >
+      <template #item="{ element }">
+        <SidebarRow
+          :node="element"
+          :selected-id="selectedId"
+          :expanded="expanded"
+          :depth="depth + 1"
+          :sort-mode="sortMode"
+          @select="(id) => $emit('select', id)"
+          @toggle="(id) => $emit('toggle', id)"
+          @action="(payload) => $emit('action', payload)"
+          @reorder="$emit('reorder')"
+        />
+      </template>
+    </draggable>
 
     <!-- Item row -->
     <div
@@ -104,6 +124,9 @@ function onContextMenu(e) {
       @click="$emit('select', node.id)"
       @contextmenu="onContextMenu"
     >
+      <span v-if="sortMode" class="drag-handle" :title="$t('sidebar.sortMode')" @click.stop>
+        <GripVertical :size="14" />
+      </span>
       <!-- <span class="chev placeholder" /> -->
       <span class="provider-badge" :class="`badge-${node.switch ? 'active' : 'inactive'}`">
         <img v-if="node.icon" class="provider-icon" :src="node.icon" :alt="node.provider" />
@@ -128,6 +151,11 @@ function onContextMenu(e) {
 .row-wrap {
   display: flex;
   flex-direction: column;
+}
+
+/* 展开的空分组也需保留可放置区域 */
+.children {
+  min-height: 6px;
 }
 
 .row {
@@ -162,6 +190,25 @@ function onContextMenu(e) {
 
 .item-row.selected {
   background: var(--accent-soft);
+}
+
+/* --- 拖拽手柄 --- */
+.drag-handle {
+  width: 16px;
+  height: 100%;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-tertiary);
+  cursor: grab;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:hover {
+  color: var(--text-primary);
 }
 
 .chev {

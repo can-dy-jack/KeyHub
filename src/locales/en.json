@@ -6,10 +6,13 @@
     "revealPrompt": "Value"
   },
   "sidebar": {
+    "add": "Add",
     "addGroup": "Add Group",
     "showSidebar": "Show Sidebar",
     "hideSidebar": "Hide Sidebar",
-    "moreActions": "More Actions"
+    "moreActions": "More Actions",
+    "sortMode": "Reorder",
+    "sortDone": "Done"
   },
   "actions": {
     "addItem": "Add Item",

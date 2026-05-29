@@ -9,6 +9,7 @@ import NodeEditorModal from "./components/NodeEditorModal.vue";
 import ConfigEditorModal from "./components/ConfigEditorModal.vue";
 import DeleteConfirmModal from "./components/DeleteConfirmModal.vue";
 import { useDataConfig } from "./composables/useDataConfig.js";
+import { useDataStore } from "./composables/useDataStore.js";
 import { useTheme } from "./composables/useTheme.js";
 import { useLocale } from "./composables/useLocale.js";
 
@@ -38,6 +39,9 @@ const {
   deleteNode,
   buildNodeFromForm,
 } = useDataConfig();
+
+// --- 获取数据历史存储（~/.config/keyhub/data.json）---
+const { loadDataStore, appendRecord, getLatest, getHistory } = useDataStore();
 
 // --- 侧边栏 ---
 const sidebarCollapsed = ref(false);
@@ -144,6 +148,10 @@ function handleNodeEditorSave(formData) {
 
 function openCreateRootGroup() {
   openNodeEditor({ mode: "create", kind: "subGroup", title: t("actions.addGroup") });
+}
+
+function openCreateRootItem() {
+  openNodeEditor({ mode: "create", kind: "item", title: t("actions.addItem"), parentId: null });
 }
 
 function openCreateChildGroup(parentGroupId) {
@@ -265,10 +273,16 @@ function handleSelect(id) { selectedItemId.value = id; }
 function handleUpdateItemData({ id, balance_data, usage_data }) {
   const node = findNode(id);
   if (!node) return;
-  if (balance_data !== undefined) node.balance_data = balance_data;
-  if (usage_data !== undefined) node.usage_data = usage_data;
+  // 追加到 data.json 历史记录，并更新内存中的最新值供详情页显示
+  if (balance_data !== undefined) {
+    appendRecord(id, "balance_data", balance_data);
+    node.balance_data = balance_data;
+  }
+  if (usage_data !== undefined) {
+    appendRecord(id, "usage_data", usage_data);
+    node.usage_data = usage_data;
+  }
   dataVersion.value++;
-  saveConfig();
 }
 
 function handleDetailAddItem() { openCreateItem(selectedItemId.value); }
@@ -279,9 +293,35 @@ function refreshSelection() {
   selectedItemId.value = firstItem()?.id ?? null;
 }
 
+// 将 data.json 中的历史数据注水到节点（取最新一条供详情页显示），
+// 并迁移旧配置文件中内联的获取数据到独立存储。
+async function hydrateFetchedData() {
+  let migrated = false;
+
+  for (const item of flatItems.value) {
+    for (const kind of ["balance_data", "usage_data"]) {
+      // 迁移：旧 settings.json 内联数据 + data.json 尚无该项历史
+      if (item[kind] && !getHistory(item.id, kind).length) {
+        await appendRecord(item.id, kind, item[kind]);
+        migrated = true;
+      }
+      // 注水：以独立存储中的最新值为准
+      item[kind] = getLatest(item.id, kind);
+    }
+  }
+
+  // 迁移后重写 settings.json，剔除内联的获取数据
+  if (migrated) {
+    await saveConfig();
+  }
+  dataVersion.value++;
+}
+
 // --- 生命周期 ---
 onMounted(async () => {
   await loadConfig();
+  await loadDataStore();
+  await hydrateFetchedData();
   refreshSelection();
 });
 </script>
@@ -297,7 +337,9 @@ onMounted(async () => {
         @select="handleSelect"
         @toggle="sidebarCollapsed = !sidebarCollapsed"
         @add-group="openCreateRootGroup"
+        @add-item="openCreateRootItem"
         @node-action="handleSidebarAction"
+        @reorder="saveConfig"
       />
 
       <div class="panes">
