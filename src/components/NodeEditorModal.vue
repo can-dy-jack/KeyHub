@@ -295,15 +295,15 @@ function onSubmit() {
   overflow: auto;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 32px 16px;
+  padding: var(--space-24) var(--space-32) var(--space-16);
 }
 
 .editor-footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  padding: 8px 16px;
+  gap: var(--space-10);
+  padding: var(--space-8) var(--space-16);
   border-top: 1px solid var(--divider);
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(12px);
@@ -311,11 +311,11 @@ function onSubmit() {
 }
 
 .editor-header {
-  margin-bottom: 14px;
+  margin-bottom: var(--space-14);
 }
 
 .editor-header h2 {
-  margin: 2px 0 4px;
+  margin: var(--space-2) 0 var(--space-4);
   font-size: 24px;
   color: var(--text-primary);
 }
@@ -327,7 +327,7 @@ function onSubmit() {
 }
 
 .editor-form {
-  padding: 18px 0 24px;
+  padding: var(--space-18) 0 var(--space-24);
   overflow: auto;
 }
 
@@ -335,16 +335,16 @@ function onSubmit() {
 .icon-preview-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
-  padding-bottom: 18px;
+  gap: var(--space-16);
+  margin-bottom: var(--space-18);
+  padding-bottom: var(--space-18);
   border-bottom: 1px solid var(--divider);
 }
 
 .icon-preview {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.05);
@@ -355,7 +355,7 @@ function onSubmit() {
   width: 32px;
   height: 32px;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: var(--radius-6);
 }
 
 .icon-preview-letter {
@@ -373,13 +373,13 @@ function onSubmit() {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--space-14);
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .form-field.full-width {
@@ -407,26 +407,26 @@ function onSubmit() {
 .multi-input-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .multi-input-row + .multi-input-row {
-  margin-top: 6px;
+  margin-top: var(--space-6);
 }
 
 .multi-input-row + .n-button {
-  margin-top: 6px;
+  margin-top: var(--space-6);
 }
 
 /* ---- 高级配置 ---- */
 .advanced-section {
-  margin-top: 4px;
+  margin-top: var(--space-4);
   width: 100%;
   grid-column: 1 / -1;
 }
 
 .advanced-section .path-note {
-  margin: 0 0 14px;
+  margin: 0 0 var(--space-14);
   font-size: 11px;
   color: var(--text-tertiary);
   line-height: 1.5;
@@ -435,20 +435,20 @@ function onSubmit() {
 .advanced-grid {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-14);
 }
 
 .advanced-group {
-  padding: 14px;
+  padding: var(--space-14);
   border-left: 3px solid var(--divider);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--radius-8) var(--radius-8) 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-14);
 }
 
 .advanced-group + .advanced-group {
-  margin-top: 8px;
+  margin-top: var(--space-8);
 }
 </style>
 

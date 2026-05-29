@@ -76,7 +76,7 @@ function renderOptionLabel(label, isActive) {
       {
         style: {
           fontWeight: isActive ? "600" : "400",
-          color: isActive ? "var(--primary-color, #f0b400)" : "inherit",
+          color: isActive ? "var(--primary-color, #34c759)" : "inherit",
         },
       },
       label,
@@ -197,8 +197,8 @@ onMounted(() => {
   height: 32px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  gap: 12px;
+  padding: 0 var(--space-12);
+  gap: var(--space-12);
 }
 .toolbar-left  {
   padding-left: 68px;
@@ -219,7 +219,7 @@ onMounted(() => {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-8);
   pointer-events: none;
 }
 
@@ -239,10 +239,10 @@ onMounted(() => {
 .search {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-6);
   height: 26px;
-  padding: 0 8px;
-  border-radius: 6px;
+  padding: 0 var(--space-8);
+  border-radius: var(--radius-6);
   background: rgba(0, 0, 0, 0.06);
   min-width: 180px;
   transition: background-color 120ms ease;

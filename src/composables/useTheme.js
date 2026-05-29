@@ -23,9 +23,9 @@ function setThemeMode(mode) {
 
 const themeOverrides = computed(() => ({
   common: {
-    primaryColor: "#f0b400",
-    primaryColorHover: "#e0a800",
-    primaryColorPressed: "#c89500",
+    primaryColor: "#34c759",
+    primaryColorHover: "#2db84d",
+    primaryColorPressed: "#249d3e",
     borderRadius: "12px",
   },
   Input: { borderRadius: "12px" },

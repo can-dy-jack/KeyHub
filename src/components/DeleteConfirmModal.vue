@@ -20,7 +20,7 @@ defineEmits(["confirm", "cancel"]);
           <p v-else>{{ $t('deleteConfirm.itemWarning') }}</p>
         </div>
       </header>
-      <div class="modal-footer" style="padding: 0 24px 22px">
+      <div class="modal-footer" style="padding: 0 var(--space-24) var(--space-20)">
         <n-button secondary size="small" @click="$emit('cancel')">{{ $t('deleteConfirm.cancel') }}</n-button>
         <n-button type="error" size="small" @click="$emit('confirm')">{{ $t('deleteConfirm.confirm') }}</n-button>
       </div>
@@ -32,6 +32,6 @@ defineEmits(["confirm", "cancel"]);
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: var(--space-10);
 }
 </style>

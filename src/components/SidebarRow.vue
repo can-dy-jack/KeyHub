@@ -63,7 +63,7 @@ function onContextMenu(e) {
     <div
       v-if="node.type === 'subGroup'"
       class="row group-row"
-      :style="{ paddingLeft: 4 + depth * 12 + 'px' }"
+      :style="{ paddingLeft: `calc(var(--space-4) + ${depth} * var(--space-12))` }"
       @click="$emit('toggle', node.id)"
       @contextmenu="onContextMenu"
     >
@@ -120,7 +120,7 @@ function onContextMenu(e) {
       v-else-if="node.type === 'item'"
       class="row item-row"
       :class="{ selected: selectedId === node.id }"
-      :style="{ paddingLeft: 4 + depth * 12 + 'px' }"
+      :style="{ paddingLeft: `calc(var(--space-4) + ${depth} * var(--space-12))` }"
       @click="$emit('select', node.id)"
       @contextmenu="onContextMenu"
     >
@@ -155,16 +155,16 @@ function onContextMenu(e) {
 
 /* 展开的空分组也需保留可放置区域 */
 .children {
-  min-height: 6px;
+  min-height: var(--space-6);
 }
 
 .row {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 6px;
-  margin: 3px 8px;
-  border-radius: 5px;
+  gap: var(--space-4);
+  padding: 0 var(--space-6);
+  margin: var(--space-3) var(--space-8);
+  border-radius: var(--radius-5);
   cursor: pointer;
   user-select: none;
   color: var(--text-primary);
@@ -218,7 +218,7 @@ function onContextMenu(e) {
   display: grid;
   place-items: center;
   transition: transform 140ms ease;
-  gap: 5px;
+  gap: var(--space-5);
 }
 
 .chev.placeholder {
@@ -237,7 +237,7 @@ function onContextMenu(e) {
   font-size: 12.5px;
   letter-spacing: 0.01em;
   color: var(--text-primary);
-  padding-left: 5px;
+  padding-left: var(--space-5);
 }
 
 .count {
@@ -251,7 +251,7 @@ function onContextMenu(e) {
   width: 24px;
   height: 24px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-6);
   background: transparent;
   color: var(--text-tertiary);
   cursor: pointer;
@@ -276,7 +276,7 @@ function onContextMenu(e) {
 .provider-badge {
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: var(--radius-6);
   display: grid;
   place-items: center;
   background: rgba(255, 255, 255, 0.55);
@@ -288,13 +288,13 @@ function onContextMenu(e) {
   width: 14px;
   height: 14px;
   object-fit: contain;
-  border-radius: 3px;
+  border-radius: var(--radius-3);
 }
 
 .provider-avatar {
   width: 14px;
   height: 14px;
-  border-radius: 3px;
+  border-radius: var(--radius-3);
   display: grid;
   place-items: center;
   font-size: 9px;
@@ -316,7 +316,7 @@ function onContextMenu(e) {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: var(--space-1);
   overflow: hidden;
 }
 

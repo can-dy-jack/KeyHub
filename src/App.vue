@@ -427,8 +427,8 @@ onMounted(async () => {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --accent: #f0b400;
-  --accent-soft: rgba(240, 180, 0, 0.25);
+  --accent: #34c759;
+  --accent-soft: rgba(52, 199, 89, 0.25);
   --divider: rgba(60, 60, 67, 0.14);
   --divider-strong: rgba(60, 60, 67, 0.22);
   --text-primary: #1d1d1f;
@@ -440,6 +440,36 @@ onMounted(async () => {
   --sidebar-bg: rgba(228, 228, 228, 0.55);
   --scrollbar-thumb: rgba(0, 0, 0, 0.16);
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.28);
+
+  /* spacing */
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-3: 3px;
+  --space-4: 4px;
+  --space-5: 5px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-18: 18px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  /* border-radius */
+  --radius-2: 2px;
+  --radius-3: 3px;
+  --radius-5: 5px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-10: 10px;
+  --radius-12: 12px;
+  --radius-14: 14px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-full: 999px;
 }
 
 html,
@@ -476,7 +506,7 @@ select {
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   background: var(--window-bg);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
@@ -509,7 +539,7 @@ select {
   z-index: 30;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: var(--space-24);
   background: rgba(16, 16, 18, 0.28);
   backdrop-filter: blur(16px);
 }
@@ -520,7 +550,7 @@ select {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
+  border-radius: var(--radius-20);
   border: 1px solid var(--divider);
   background: rgba(250, 250, 252, 0.78);
 }
@@ -533,13 +563,13 @@ select {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  padding: 22px 24px 14px;
+  gap: var(--space-18);
+  padding: var(--space-20) var(--space-24) var(--space-14);
   border-bottom: 1px solid var(--divider);
 }
 
 .modal-header h2 {
-  margin: 2px 0 4px;
+  margin: var(--space-2) 0 var(--space-4);
   font-size: 18px;
   color: var(--text-primary);
 }
@@ -560,9 +590,9 @@ select {
 
 .status-note,
 .error-note {
-  margin: 0 24px 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
+  margin: 0 var(--space-24) var(--space-12);
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-12);
   font-size: 12px;
 }
 
@@ -582,7 +612,7 @@ select {
   width: 30px;
   height: 30px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: rgba(0, 0, 0, 0.06);
   color: var(--text-secondary);
   font-size: 20px;
@@ -607,7 +637,7 @@ html[data-theme="dark"] {
   --sidebar-bg: rgba(28, 28, 30, 0.2);
   --scrollbar-thumb: rgba(255, 255, 255, 0.18);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
-  --accent-soft: rgba(240, 180, 0, 0.3);
+  --accent-soft: rgba(52, 199, 89, 0.3);
 }
 
 html[data-theme="dark"] .key-detail-pane {
@@ -633,7 +663,7 @@ html[data-theme="dark"] .icon-close {
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--scrollbar-thumb);
 }
 

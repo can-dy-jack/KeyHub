@@ -1,12 +1,7 @@
 ## 点子
- ~/.config/keyhub/settings.json 同级增加一个日志文件，保存获取余额历史、报错历史，分开
+ ~/.config/keyhub/settings.json 
+ ~/.config/keyhub/data.json 
 
-
-
-首页：
-仪表盘：
-用量分析：
-
-
-侧边栏支持拖拽调整顺序，支持跨分组拖拽？
-
+首页
+仪表盘
+用量分析

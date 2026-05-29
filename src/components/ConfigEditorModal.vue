@@ -282,8 +282,8 @@ export const ItemRow = {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  padding: 22px 24px 14px;
+  gap: var(--space-18);
+  padding: var(--space-20) var(--space-24) var(--space-14);
   border-bottom: 1px solid var(--divider);
   flex-wrap: wrap;
 }
@@ -293,7 +293,7 @@ export const ItemRow = {
 }
 
 .header-left h2 {
-  margin: 2px 0 4px;
+  margin: var(--space-2) 0 var(--space-4);
   font-size: 18px;
   color: var(--text-primary);
 }
@@ -312,25 +312,25 @@ export const ItemRow = {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-8);
   flex-wrap: wrap;
 }
 
 /* ===== Tab bar ===== */
 .tab-bar {
   display: flex;
-  border-radius: 8px;
+  border-radius: var(--radius-8);
   background: rgba(0, 0, 0, 0.06);
-  padding: 2px;
+  padding: var(--space-2);
 }
 
 .tab-btn {
   border: none;
   background: transparent;
-  padding: 4px 12px;
+  padding: var(--space-4) var(--space-12);
   font-size: 12px;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: var(--radius-6);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 140ms ease;
@@ -355,7 +355,7 @@ export const ItemRow = {
 
 /* ===== Tree View ===== */
 .tree-body {
-  padding: 12px 24px;
+  padding: var(--space-12) var(--space-24);
 }
 
 .tree-empty {
@@ -370,15 +370,15 @@ export const ItemRow = {
 .tree-list {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: var(--space-1);
 }
 
 .tree-group-row {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-radius: 10px;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-10);
   cursor: pointer;
   user-select: none;
   font-weight: 600;
@@ -427,8 +427,8 @@ export const ItemRow = {
   font-size: 11px;
   font-weight: 500;
   color: var(--text-tertiary);
-  padding: 1px 7px;
-  border-radius: 999px;
+  padding: var(--space-1) 7px;
+  border-radius: var(--radius-full);
   background: rgba(0, 0, 0, 0.06);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
@@ -437,9 +437,9 @@ export const ItemRow = {
 .tree-item-row {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-radius: 10px;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-10);
   font-size: 13px;
   color: var(--text-primary);
 }
@@ -465,7 +465,7 @@ export const ItemRow = {
 .provider-badge-tree {
   width: 22px;
   height: 22px;
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   display: grid;
   place-items: center;
   background: rgba(255, 255, 255, 0.55);
@@ -477,13 +477,13 @@ export const ItemRow = {
   width: 13px;
   height: 13px;
   object-fit: contain;
-  border-radius: 2px;
+  border-radius: var(--radius-2);
 }
 
 .provider-avatar-tree {
   width: 13px;
   height: 13px;
-  border-radius: 2px;
+  border-radius: var(--radius-2);
   display: grid;
   place-items: center;
   font-size: 8px;
@@ -496,8 +496,8 @@ export const ItemRow = {
 .source-body {
   display: flex;
   flex-direction: column;
-  padding: 12px 24px;
-  gap: 8px;
+  padding: var(--space-12) var(--space-24);
+  gap: var(--space-8);
 }
 
 .source-toolbar {
@@ -509,7 +509,7 @@ export const ItemRow = {
 .source-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-10);
   font-size: 11px;
 }
 
@@ -521,9 +521,9 @@ export const ItemRow = {
 .json-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 999px;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-8);
+  border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 600;
 }
@@ -541,9 +541,9 @@ export const ItemRow = {
 .json-editor {
   flex: 1;
   min-height: 380px;
-  padding: 16px;
+  padding: var(--space-16);
   border: 1px solid var(--divider);
-  border-radius: 14px;
+  border-radius: var(--radius-14);
   font-family: ui-monospace, "SF Mono", Menlo, "Cascadia Code", monospace;
   font-size: 12.5px;
   line-height: 1.6;
@@ -557,7 +557,7 @@ export const ItemRow = {
 
 .json-editor:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(240, 180, 0, 0.12);
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.12);
 }
 
 .json-editor::placeholder {
@@ -566,9 +566,9 @@ export const ItemRow = {
 
 /* ===== Status bar ===== */
 .status-bar {
-  margin: 0 24px;
-  padding: 8px 12px;
-  border-radius: 10px;
+  margin: 0 var(--space-24);
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-10);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -590,9 +590,9 @@ export const ItemRow = {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 8px 24px 16px;
-  margin-top: 8px;
+  gap: var(--space-10);
+  padding: var(--space-8) var(--space-24) var(--space-16);
+  margin-top: var(--space-8);
 }
 
 .footer-hint {
@@ -602,7 +602,7 @@ export const ItemRow = {
 
 .footer-right {
   display: flex;
-  gap: 10px;
+  gap: var(--space-10);
 }
 </style>
 
@@ -625,7 +625,7 @@ html[data-theme="dark"] .json-editor {
 
 html[data-theme="dark"] .json-editor:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(240, 180, 0, 0.18);
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.18);
 }
 
 html[data-theme="dark"] .json-badge.valid {

@@ -101,13 +101,13 @@ onUnmounted(() => {
         <div class="sidebar-header" data-tauri-drag-region @mousedown="startWindowDrag">
             <SideButton :collapsed="collapsed" @toggle="$emit('toggle')" />
         </div>
-        <div class="sidebar-info">
+        <!-- <div class="sidebar-info">
             <img class="app-logo" src="/app-icon.png" alt="KeyHub Logo" />
             <div class="app-meta">
                 <div class="app-title">KeyHub</div>
                 <div class="app-version">v0.1.0</div>
             </div>
-        </div>
+        </div> -->
         <div v-if="!collapsed" class="sidebar-toolbar">
             <n-dropdown trigger="click" :options="addOptions" @select="handleAddSelect">
                 <n-button quaternary size="small" :title="t('sidebar.add')" aria-label="Add"
@@ -156,7 +156,7 @@ onUnmounted(() => {
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: var(--space-1);
     position: relative;
     background: var(--sidebar-bg);
     border-right: 1px solid var(--divider);
@@ -197,7 +197,7 @@ onUnmounted(() => {
 .resize-handle-line {
     width: 3px;
     height: 36px;
-    border-radius: 2px;
+    border-radius: var(--radius-2);
     background: var(--divider-strong);
     opacity: 0;
     transition: opacity 160ms ease;
@@ -211,7 +211,7 @@ onUnmounted(() => {
 }
 
 .sidebar-header {
-    padding: 3px 8px 0 0;
+    padding: var(--space-3) var(--space-8) 0 0;
     display: flex;
     justify-content: flex-end;
 }
@@ -220,7 +220,7 @@ onUnmounted(() => {
     flex: 1;
     min-height: 0;
     overflow: auto;
-    padding: 6px 0 10px;
+    padding: var(--space-6) 0 var(--space-10);
 }
 
 .drag-list {
@@ -230,11 +230,11 @@ onUnmounted(() => {
 .sidebar-info {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin: 0 12px 6px;
-    padding: 10px 14px;
+    gap: var(--space-10);
+    margin: 0 var(--space-12) var(--space-6);
+    padding: var(--space-10) var(--space-14);
     min-height: 50px;
-    border-radius: 14px;
+    border-radius: var(--radius-14);
     background: rgba(255, 255, 255, 0.28);
     border: 1px solid var(--divider);
 }
@@ -242,10 +242,10 @@ onUnmounted(() => {
 .sidebar-toolbar {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin: 0 8px 6px;
-    padding: 4px 6px;
-    border-radius: 8px;
+    gap: var(--space-4);
+    margin: 0 var(--space-8) var(--space-6);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-8);
     background: rgba(255, 255, 255, 0.18);
     border: 1px solid var(--divider);
 }
@@ -254,14 +254,14 @@ onUnmounted(() => {
     flex: 1;
     justify-content: flex-start;
     font-size: 12.5px;
-    padding: 0 8px;
+    padding: 0 var(--space-8);
     height: 28px;
 }
 
 .app-logo {
     width: 32px;
     height: 32px;
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     object-fit: cover;
 }
@@ -269,7 +269,7 @@ onUnmounted(() => {
 .app-meta {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-2);
 }
 
 .app-title {
@@ -304,7 +304,7 @@ html[data-theme="dark"] .sidebar-toolbar {
 .drag-ghost > .row {
     background: var(--accent-soft) !important;
     border: 1px dashed var(--accent);
-    border-radius: 6px;
+    border-radius: var(--radius-6);
     min-height: 38px;
 }
 

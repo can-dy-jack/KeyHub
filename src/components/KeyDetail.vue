@@ -220,14 +220,14 @@ function formatUsageValue(val) {
               <div class="usage-row">
                 <span class="usage-sub-label">{{ $t('detail.usage5hUsage') }}</span>
                 <span v-if="item.usage_data?.hour_result != null" class="data-card-value">
-                  {{ formatUsageValue(item.usage_data.hour_result) }}
+                  {{ formatUsageValue(item.usage_data.hour_result) }} %
                 </span>
                 <span v-else class="data-card-value data-card-empty">--</span>
               </div>
               <div class="usage-row">
                 <span class="usage-sub-label">{{ $t('detail.usage1wUsage') }}</span>
                 <span v-if="item.usage_data?.week_result != null" class="data-card-value">
-                  {{ formatUsageValue(item.usage_data.week_result) }}
+                  {{ formatUsageValue(item.usage_data.week_result) }} %
                 </span>
                 <span v-else class="data-card-value data-card-empty">--</span>
               </div>
@@ -411,32 +411,32 @@ function formatUsageValue(val) {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 20px 32px 16px;
+  padding: var(--space-20) var(--space-32) var(--space-16);
   width: 100%;
   margin: 0 auto;
 }
 
 .detail-scroll::-webkit-scrollbar {
-  width: 10px;
+  width: var(--space-10);
 }
 
 .detail-scroll::-webkit-scrollbar-thumb {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: rgba(0, 0, 0, 0.14);
 }
 .header {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  padding: 4px 0 16px;
-  margin-bottom: 16px;
+  gap: var(--space-16);
+  padding: var(--space-4) 0 var(--space-16);
+  margin-bottom: var(--space-16);
 }
 
 .header-icon {
   flex-shrink: 0;
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.04);
@@ -451,7 +451,7 @@ function formatUsageValue(val) {
 .provider-avatar-hero {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--radius-8);
   display: grid;
   place-items: center;
   font-size: 14px;
@@ -468,7 +468,7 @@ function formatUsageValue(val) {
 .header-title-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -486,25 +486,25 @@ function formatUsageValue(val) {
   align-items: center;
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 6px 6px 0 0;
-  background: rgba(240, 180, 0, 0.12);
-  color: var(--primary-color, #c99200);
+  padding: var(--space-3) var(--space-10);
+  border-radius: var(--radius-6) var(--radius-6) 0 0;
+  background: rgba(52, 199, 89, 0.12);
+  color: var(--primary-color, #249d3e);
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  border-bottom: 2px solid var(--primary-color, #f0b400);
+  border-bottom: 2px solid var(--primary-color, #34c759);
 }
 
 .header-models {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
+  gap: var(--space-6);
+  margin-top: var(--space-10);
 }
 
 /* ---- Fetch button inside data cards ---- */
 .data-card-fetch-btn {
-  margin-top: 8px;
+  margin-top: var(--space-8);
 }
 
 .data-card-empty {
@@ -516,13 +516,13 @@ function formatUsageValue(val) {
 .usage-values {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .usage-row {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .usage-sub-label {
@@ -537,12 +537,12 @@ function formatUsageValue(val) {
 .data-display-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
+  gap: var(--space-10);
 }
 
 .data-card {
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: var(--space-12) var(--space-14);
+  border-radius: var(--radius-10);
   border: 1px solid var(--divider);
   background: rgba(0, 0, 0, 0.02);
 }
@@ -553,7 +553,7 @@ function formatUsageValue(val) {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-tertiary);
-  margin-bottom: 4px;
+  margin-bottom: var(--space-4);
 }
 
 .data-card-value {
@@ -566,31 +566,31 @@ function formatUsageValue(val) {
 .data-card-time {
   font-size: 10px;
   color: var(--text-tertiary);
-  margin-top: 4px;
+  margin-top: var(--space-4);
 }
 
 .badges {
   display: flex;
-  gap: 6px;
+  gap: var(--space-6);
   flex-wrap: wrap;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-5);
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 999px;
+  padding: var(--space-2) var(--space-8);
+  border-radius: var(--radius-full);
   background: rgba(60, 60, 67, 0.1);
   color: var(--text-secondary);
   text-transform: capitalize;
 }
 
 .badge-dot {
-  width: 6px;
-  height: 6px;
+  width: var(--space-6);
+  height: var(--space-6);
   border-radius: 50%;
   background: currentColor;
 }
@@ -606,17 +606,17 @@ function formatUsageValue(val) {
 }
 
 .description {
-  margin-bottom: 10px;
+  margin-bottom: var(--space-10);
   border: none;
   padding: 0;
-  padding-left: 10px;
+  padding-left: var(--space-10);
   border-left: 2px solid rgba(0, 0, 0, 0.12);
   color: var(--text-secondary);
 }
 
 /* ---- Fields ---- */
 .field {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-12);
 }
 
 .field label {
@@ -626,19 +626,19 @@ function formatUsageValue(val) {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-tertiary);
-  margin-bottom: 4px;
+  margin-bottom: var(--space-4);
 }
 
 .value {
   font-size: 13px;
   color: var(--text-primary);
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-8);
   border: 1px solid var(--divider);
 }
 
 .value + .value {
-  margin-top: 4px;
+  margin-top: var(--space-4);
 }
 
 .mono {
@@ -649,7 +649,7 @@ function formatUsageValue(val) {
 .row-line {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-8);
 }
 
 .row-line > span {
@@ -687,27 +687,27 @@ function formatUsageValue(val) {
 .advanced-detail-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-top: 8px;
+  gap: var(--space-12);
+  padding-top: var(--space-8);
 }
 
 .advanced-group {
-  padding: 10px 14px;
+  padding: var(--space-10) var(--space-14);
   border-left: 3px solid var(--divider);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--radius-8) var(--radius-8) 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-12);
 }
 
 .advanced-group + .advanced-group {
-  margin-top: 8px;
+  margin-top: var(--space-8);
 }
 
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-4);
 }
 
 .detail-field-label {
@@ -721,14 +721,14 @@ function formatUsageValue(val) {
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-6);
 }
 
 .chip {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-6);
   background: rgba(0, 0, 0, 0.06);
   color: var(--text-primary);
   border: 1px solid var(--divider);
@@ -739,19 +739,19 @@ function formatUsageValue(val) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: var(--space-8) var(--space-16);
   border-top: 1px solid var(--divider);
   flex-shrink: 0;
 }
 
 .footer-nav {
   display: flex;
-  gap: 4px;
+  gap: var(--space-4);
 }
 
 .footer-actions {
   display: flex;
-  gap: 8px;
+  gap: var(--space-8);
   flex-wrap: wrap;
 }
 
@@ -765,7 +765,7 @@ function formatUsageValue(val) {
   justify-content: center;
   color: var(--text-tertiary);
   font-size: 13px;
-  gap: 12px;
+  gap: var(--space-12);
 }
 
 .empty-mark {
@@ -773,7 +773,7 @@ function formatUsageValue(val) {
   height: 52px;
   display: grid;
   place-items: center;
-  border-radius: 16px;
+  border-radius: var(--radius-16);
   color: var(--text-tertiary);
   font-size: 24px;
 }
