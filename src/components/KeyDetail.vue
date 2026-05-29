@@ -18,8 +18,8 @@ const models = computed(() => toArr(props.item?.models));
 </script>
 
 <template>
-  <div v-if="item" class="detail">
-    <div class="detail-scroll">
+  <div class="detail">
+    <div v-if="item" class="detail-scroll">
       <div class="header">
         <div class="meta-line">{{ item.provider }}</div>
         <h1 class="title">{{ item.name }}</h1>
@@ -74,11 +74,11 @@ const models = computed(() => toArr(props.item?.models));
         <button class="ghost-btn danger" type="button">Delete</button>
       </section>
     </div>
-  </div>
 
-  <div v-else class="empty">
-    <div class="empty-mark">⌘</div>
-    <p>No Item Selected</p>
+    <div v-else class="empty">
+      <div class="empty-mark">⌘</div>
+      <p>No Item Selected</p>
+    </div>
   </div>
 </template>
 
@@ -281,16 +281,25 @@ const models = computed(() => toArr(props.item?.models));
 
 .empty {
   flex: 1;
-  display: grid;
-  place-items: center;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   color: var(--text-tertiary);
   font-size: 13px;
   gap: 12px;
 }
 
 .empty-mark {
-  font-size: 42px;
-  opacity: 0.4;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-tertiary);
+  font-size: 24px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -318,6 +327,9 @@ const models = computed(() => toArr(props.item?.models));
   }
   .ghost-btn.danger {
     color: #ff6961;
+  }
+  .empty-mark {
+    background: rgba(255, 255, 255, 0.06);
   }
 }
 </style>
