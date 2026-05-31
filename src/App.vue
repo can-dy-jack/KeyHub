@@ -582,7 +582,6 @@ select {
 }
 
 .modal-kicker {
-  text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 10px;
   font-weight: 700;

@@ -1,5 +1,7 @@
 # KeyHub
 
+![app.png](./public/app.png)
+
 - 中文文档: [README.zh-CN.md](README.zh-CN.md)
 - English Docs: [README.en.md](README.en.md)
 

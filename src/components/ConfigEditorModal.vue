@@ -455,7 +455,6 @@ export const ItemRow = {
 .tree-provider-tag {
   font-size: 10px;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-tertiary);
   flex-shrink: 0;

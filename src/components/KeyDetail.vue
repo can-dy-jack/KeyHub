@@ -254,7 +254,7 @@ function formatUsageValue(val) {
       <!-- Website -->
       <section v-if="item.website" class="field">
         <label>{{ $t('detail.website') }}</label>
-        <div class="value mono row-line">
+        <div class="value mono row-line wrap-line">
           <a class="link" :href="item.website" target="_blank" rel="noreferrer">{{ item.website }}</a>
           <n-button text size="tiny" @click="copyValue(item.website)">
             <template #icon>
@@ -268,8 +268,8 @@ function formatUsageValue(val) {
       <!-- API URLs -->
       <section v-if="apiUrls.length" class="field">
         <label>{{ apiUrls.length > 1 ? $t('detail.apiUrls') : $t('detail.apiUrl') }}</label>
-        <div v-for="(u, i) in apiUrls" :key="i" class="value mono row-line">
-          <span>{{ u }}</span>
+        <div v-for="(u, i) in apiUrls" :key="i" class="value mono row-line wrap-line">
+          <span class="url-text" :title="u">{{ u }}</span>
           <n-button text size="tiny" @click="copyValue(u)">
             <template #icon>
               <Check v-if="isCopied(u)" :size="12" color="#22c55e" />
@@ -491,7 +491,6 @@ function formatUsageValue(val) {
   background: rgba(52, 199, 89, 0.12);
   color: var(--primary-color, #249d3e);
   letter-spacing: 0.03em;
-  text-transform: uppercase;
   border-bottom: 2px solid var(--primary-color, #34c759);
 }
 
@@ -550,7 +549,6 @@ function formatUsageValue(val) {
 .data-card-label {
   font-size: 10px;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-tertiary);
   margin-bottom: var(--space-4);
@@ -623,7 +621,6 @@ function formatUsageValue(val) {
   display: block;
   font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-tertiary);
   margin-bottom: var(--space-4);
@@ -650,13 +647,38 @@ function formatUsageValue(val) {
   display: flex;
   align-items: center;
   gap: var(--space-8);
+  min-width: 0;
 }
 
 .row-line > span {
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.row-line :deep(button) {
+  flex-shrink: 0;
+}
+
+.url-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.wrap-line {
+  align-items: flex-start;
+}
+
+.wrap-line .url-text,
+.wrap-line .link {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 .key-text {
@@ -713,9 +735,12 @@ function formatUsageValue(val) {
 .detail-field-label {
   font-size: 10px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   color: var(--text-tertiary);
+}
+
+.advanced-group .value.mono {
+  padding: var(--space-4) var(--space-8);
+  font-size: 11px;
 }
 
 .chips {
