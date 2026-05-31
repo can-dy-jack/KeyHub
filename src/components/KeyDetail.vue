@@ -64,7 +64,8 @@ const revealedKeys = ref(new Set());
 function maskKey(value) {
   const text = String(value ?? "");
   if (text.length <= 8) return "*".repeat(text.length);
-  return text.slice(0, 4) + "*".repeat(text.length - 8) + text.slice(-4);
+  const middleMaskLength = Math.min(20, Math.max(1, text.length - 8));
+  return text.slice(0, 4) + "*".repeat(middleMaskLength) + text.slice(-4);
 }
 
 function toggleReveal(key) {
@@ -282,7 +283,7 @@ function formatUsageValue(val) {
       <!-- API Keys -->
       <section v-if="apiKeys.length" class="field">
         <label>{{ apiKeys.length > 1 ? $t('detail.apiKeys') : $t('detail.apiKey') }}</label>
-        <div v-for="(k, i) in apiKeys" :key="i" class="value mono row-line">
+        <div v-for="(k, i) in apiKeys" :key="i" class="value mono row-line wrap-line key-wrap-line">
           <span class="key-text">{{ isRevealed(k) ? k : maskKey(k) }}</span>
           <n-button text size="tiny" @click="copyValue(k)">
             <template #icon>
@@ -683,6 +684,28 @@ function formatUsageValue(val) {
 
 .key-text {
   user-select: text;
+}
+
+.key-wrap-line .key-text {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.key-wrap-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: start;
+  column-gap: var(--space-6);
+  row-gap: var(--space-4);
+}
+
+.key-wrap-line :deep(button) {
+  align-self: start;
 }
 
 .link {
